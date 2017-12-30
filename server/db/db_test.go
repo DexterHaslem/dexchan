@@ -32,15 +32,26 @@ func TestDb_GetBoards(t *testing.T) {
 	}
 
 	newThread := &model.Thread{
+		BoardID:     boards[0].ID,
 		Subject:     "hello world",
 		Description: "hopefully a thread created",
+		Attachment: model.Attachment{
+			Size:              1024,
+			ThumbnailLocation: "Thumbnaillocation",
+			OriginalFilename:  "Orig filename.webm",
+			Location:          "cdn location",
+		},
 	}
 
-	tid, err := d.CreateThread(boards[0].ID, newThread, "192.168.1.1")
+	tid, err := d.CreateThread(newThread, "192.168.1.1")
 	if assert.NoError(t, err) {
 		assert.NotEqual(t, 0, tid)
 
-		pid, err := d.CreatePost(tid, "here is a post", "192.168.1.2")
+		p := &model.Post{
+			ThreadID: tid,
+			Content: "shitposting",
+		}
+		pid, err := d.CreatePost(p, "192.168.1.2")
 		assert.NoError(t, err)
 		assert.NotEqual(t, 0, pid)
 	}

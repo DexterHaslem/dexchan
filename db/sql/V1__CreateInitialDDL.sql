@@ -1,9 +1,11 @@
 CREATE TABLE board (
-  id          SERIAL PRIMARY KEY,
-  name        TEXT    NOT NULL UNIQUE,
-  shortname   TEXT    NOT NULL UNIQUE,
-  description TEXT,
-  nsfw        BOOLEAN NOT NULL
+  id                      SERIAL PRIMARY KEY,
+  name                    TEXT    NOT NULL UNIQUE,
+  shortname               TEXT    NOT NULL UNIQUE,
+  description             TEXT,
+  nsfw                    BOOLEAN NOT NULL,
+  max_attachment_size     INT     NOT NULL,
+  allowed_attachment_exts TEXT    NOT NULL
 );
 
 CREATE TABLE auser (
@@ -29,81 +31,45 @@ CREATE TABLE login_boardmod (
 );
 
 CREATE TABLE thread (
-  id            SERIAL PRIMARY KEY,
-  subject       TEXT                      NOT NULL,
-  description   TEXT,
-  created_by_id INT REFERENCES auser (id) NOT NULL,
-  created_at    TIMESTAMP                 NOT NULL,
-  hidden        BOOLEAN                   NOT NULL
-);
-
-CREATE TABLE board_thread (
-  board_id  INT REFERENCES board (id)  NOT NULL,
-  thread_id INT REFERENCES thread (id) NOT NULL,
-  PRIMARY KEY (board_id, thread_id)
+  id                   SERIAL PRIMARY KEY,
+  board_id             INT REFERENCES board (id)  NOT NULL,
+  subject              TEXT                       NOT NULL,
+  description          TEXT,
+  created_by_id        INT REFERENCES auser (id)  NOT NULL,
+  created_at           TIMESTAMP                  NOT NULL,
+  hidden               BOOLEAN                    NOT NULL,
+  -- thread and post are two different tables mostly because
+  -- thread must always be started with an attachment.
+  -- this slightly denormalizes attachment data big woop. needs to be atomic anyway
+  attachment_orig_name TEXT                       NOT NULL,
+  attachment_tn_loc    TEXT                       NOT NULL,
+  attachment_loc       TEXT                       NOT NULL,
+  attachment_size      INT                        NOT NULL
 );
 
 CREATE TABLE post (
-  id           SERIAL PRIMARY KEY,
-  content      TEXT                      NOT NULL,
-  posted_at    TIMESTAMP                 NOT NULL,
-  posted_by_id INT REFERENCES auser (id) NOT NULL,
-  hidden       BOOLEAN                   NOT NULL
+  id                   SERIAL PRIMARY KEY,
+  thread_id            INT REFERENCES thread (id) NOT NULL,
+  content              TEXT                       NOT NULL,
+  posted_at            TIMESTAMP                  NOT NULL,
+  posted_by_id         INT REFERENCES auser (id)  NOT NULL,
+  hidden               BOOLEAN                    NOT NULL,
+  attachment_orig_name TEXT,
+  attachment_tn_loc    TEXT,
+  attachment_loc       TEXT,
+  attachment_size      INT                        NOT NULL
 );
 
-CREATE TABLE thread_post (
-  thread_id INT REFERENCES thread (id) NOT NULL,
-  post_id   INT REFERENCES post (id)   NOT NULL,
-  PRIMARY KEY (thread_id, post_id)
-);
-
-CREATE TABLE attachmenttype (
-  id   SERIAL PRIMARY KEY,
-  name TEXT NOT NULL UNIQUE,
-  -- moved to join so per-board sizes
-  -- maxsize_bytes INT  NOT NULL,
-  ext  TEXT NOT NULL UNIQUE
-);
-
-CREATE TABLE board_attachmenttype (
-  board_id          INT REFERENCES board (id)          NOT NULL,
-  attachmenttype_id INT REFERENCES attachmenttype (id) NOT NULL,
-  maxsize_bytes     INT                                NOT NULL,
-  PRIMARY KEY (board_id, attachmenttype_id)
-);
-
-CREATE TABLE attachment (
-  id                SERIAL PRIMARY KEY,
-  attachmenttype_id INT REFERENCES attachmenttype (id)  NOT NULL,
-  orig_filename     TEXT                                NOT NULL,
-  uploaded_by_id    INT REFERENCES auser (id)           NOT NULL,
-  location          TEXT                                NOT NULL, -- server location for cdn
-  tn_location       TEXT                                NOT NULL
-);
-
-CREATE TABLE post_attachment (
-  post_id       INT REFERENCES post (id)       NOT NULL,
-  attachment_id INT REFERENCES attachment (id) NOT NULL,
-  PRIMARY KEY (post_id, attachment_id)
-);
-
--- always tn
-CREATE TABLE thread_attachment (
-  thread_id     INT REFERENCES thread (id)       NOT NULL,
-  attachment_id INT REFERENCES attachment (id)   NOT NULL,
-  PRIMARY KEY (thread_id, attachment_id)
-);
 
 CREATE OR REPLACE VIEW recent_threads_view AS
   SELECT
-    b.name    AS board_name,
-    t.subject AS subject,
+    b.id          AS board_id,
+    t.id          AS thread_id,
+    t.subject     AS thread_subject,
+    t.description AS thread_description,
     t.created_at
-  FROM post p
-    INNER JOIN thread_post tp ON p.id = tp.post_id
-    INNER JOIN thread t ON tp.thread_id = t.id
-    INNER JOIN board_thread bt ON bt.thread_id = tp.thread_id
-    INNER JOIN board b ON bt.board_id = b.id
+  FROM thread t
+    INNER JOIN board b ON b.id = t.board_id
   ORDER BY t.created_at DESC
   LIMIT 10;
 

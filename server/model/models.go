@@ -18,45 +18,39 @@ type Login struct {
 }
 
 type Board struct {
-	ID            int64  `json:"id"`
-	Name          string `json:"name"`
-	ShortCode     string `json:"shortCode"`
-	Description   string `json:"description"`
-	IsNotWorksafe bool   `json:"isNsfw"`
+	ID                int64  `json:"id"`
+	Name              string `json:"name"`
+	ShortCode         string `json:"shortCode"`
+	Description       string `json:"description"`
+	IsNotWorksafe     bool   `json:"isNsfw"`
+	MaxAttachmentSize int64  `json:"maxAttachmentSize"`
+	AttachmentTypes   string `json:"allowedAttachmentTypes"`
 }
 
 type Thread struct {
 	ID          int64  `json:"id"`
+	BoardID     int64  `json:"boardID"`
 	Description string `json:"description"`
 	Subject     string `json:"subject"`
-	PostedByID  int    `json:"postedByID"`
+	PostedByID  int64  `json:"postedByID"`
+
+	Attachment
 }
 
 type Post struct {
 	ID         int64     `json:"ID"`
+	ThreadID   int64     `json:"threadID"`
 	Content    string    `json:"content"`
 	PostedAt   time.Time `json:"postedAt"`
 	IsHidden   bool      `json:"isHidden"`
-	PostedByID int       `json:"postedByID"`
-}
+	PostedByID int64     `json:"postedByID"`
 
-type Attachment struct {
-	ID                int64  `json:"id"`
-	AttachmentTypeID  int    `json:"attachmentTypeID"`
-	OriginalFilename  string `json:"originalFilename"`
-	UploadedByID      int    `json:"uploadedByID"`
-	Location          string `json:"location"`
-	ThumbnailLocation string `json:"tnLocation"`
-}
-
-type PostWithAttachment struct {
-	Post
 	Attachment
 }
 
-type AttachmentType struct {
-	ID   int64  `json:"id"`
-	Name string `json:"name"`
-	Ext  string `json:"ext"`
-	//	MaxSizeInBytes int `json:"maxSizeBytes"`
+type Attachment struct {
+	OriginalFilename  string `json:"attachmentOriginalFilename"`
+	Location          string `json:"attachmentLocation"`
+	ThumbnailLocation string `json:"attachmentTnLocation"`
+	Size              int64  `json:"attachmentSize"`
 }
