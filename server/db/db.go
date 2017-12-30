@@ -47,21 +47,15 @@ func (d *db) Close() error {
 }
 
 func (d *db) CreatePost(threadID int64, content, ip string) (int64, error) {
-	return 0, nil
+	var createdID int64
+	err := d.openedDB.QueryRow("SELECT create_post($1, $2, $3);", threadID, content, ip).Scan(&createdID)
+	return createdID, err
 }
 
 func (d *db) CreateThread(boardID int64, t *model.Thread, ip string) (int64, error) {
 	var createdID int64
 	err := d.openedDB.QueryRow("SELECT create_thread($1, $2, $3, $4);", boardID, t.Subject, t.Description, ip).Scan(&createdID)
 	return createdID, err
-	//
-	//p, err := d.openedDB.Prepare("")
-	//if err != nil {
-	//	return 0, err
-	//}
-	//r, err := p.Exec(boardID, t.Subject, t.Description, ip);
-	//// this isnt actually right. we could get result
-	//return r.LastInsertId()
 }
 
 func Open(c *cfg.C) (D, error) {

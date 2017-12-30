@@ -62,7 +62,7 @@ LANGUAGE plpgsql;
 -- since we have to create attachments separate from posts, this cant be atomic and needs
 -- to be controlled in our application layer best as possible
 CREATE OR REPLACE FUNCTION create_post(tid INT, contents TEXT, ip TEXT)
-  RETURNS UUID AS $$
+  RETURNS int AS $$
 DECLARE
   post_id   INT := NULL;
   poster_id INT := NULL;

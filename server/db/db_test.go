@@ -32,12 +32,17 @@ func TestDb_GetBoards(t *testing.T) {
 	}
 
 	newThread := &model.Thread{
-		Subject: "hello world",
+		Subject:     "hello world",
 		Description: "hopefully a thread created",
 	}
 
-	tid, err := d.CreateThread(boards[0].ID, newThread, "192.168.1.1");
-	assert.NoError(t, err)
-	assert.NotEqual(t, 0, tid)
+	tid, err := d.CreateThread(boards[0].ID, newThread, "192.168.1.1")
+	if assert.NoError(t, err) {
+		assert.NotEqual(t, 0, tid)
+
+		pid, err := d.CreatePost(tid, "here is a post", "192.168.1.2")
+		assert.NoError(t, err)
+		assert.NotEqual(t, 0, pid)
+	}
 	assert.NoError(t, d.Close())
 }
