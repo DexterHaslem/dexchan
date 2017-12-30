@@ -89,9 +89,9 @@ CREATE TABLE post_attachment (
 
 -- always tn
 CREATE TABLE thread_attachment (
-  post_id       INT REFERENCES post (id)       NOT NULL,
-  attachment_id INT REFERENCES attachment (id) NOT NULL,
-  PRIMARY KEY (post_id, attachment_id)
+  thread_id     INT REFERENCES thread (id)       NOT NULL,
+  attachment_id INT REFERENCES attachment (id)   NOT NULL,
+  PRIMARY KEY (thread_id, attachment_id)
 );
 
 CREATE OR REPLACE VIEW recent_threads_view AS
