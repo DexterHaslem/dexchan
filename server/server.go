@@ -1,7 +1,7 @@
 package server
 
 import (
-	_ "github.com/lib/pq"
+
 	"fmt"
 	"net/http"
 	"dexchan/server/cfg"
