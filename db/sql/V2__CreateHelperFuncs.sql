@@ -33,7 +33,7 @@ END;
 $$
 LANGUAGE plpgsql;
 
-CREATE OR REPLACE FUNCTION create_thread(bid INT, sub TEXT, descrp TEXT, ip TEXT, attachmentid INT)
+CREATE OR REPLACE FUNCTION create_thread(bid INT, sub TEXT, descrp TEXT, ip TEXT)
   RETURNS INT AS $$
 DECLARE
   thread_id INT := NULL;

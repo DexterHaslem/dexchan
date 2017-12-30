@@ -11,8 +11,8 @@ import (
 
 type D interface {
 	GetBoards() ([]*model.Board, error)
-	CreatePost(threadID int, content, ip string) (int, error)
-	CreateThread(boardID int,t *model.Thread, ip string, attachmentID int) (int, error)
+	CreatePost(threadID int64, content, ip string) (int64, error)
+	CreateThread(boardID int64, t *model.Thread, ip string) (int64, error)
 	Close() error
 }
 
@@ -46,12 +46,22 @@ func (d *db) Close() error {
 	return d.openedDB.Close()
 }
 
-func (d *db) CreatePost(threadID int, content, ip string) (int, error) {
+func (d *db) CreatePost(threadID int64, content, ip string) (int64, error) {
 	return 0, nil
 }
 
-func (d *db) CreateThread(boardID int,t *model.Thread, ip string, attachmentID int) (int, error) {
-	return 0, nil
+func (d *db) CreateThread(boardID int64, t *model.Thread, ip string) (int64, error) {
+	var createdID int64
+	err := d.openedDB.QueryRow("SELECT create_thread($1, $2, $3, $4);", boardID, t.Subject, t.Description, ip).Scan(&createdID)
+	return createdID, err
+	//
+	//p, err := d.openedDB.Prepare("")
+	//if err != nil {
+	//	return 0, err
+	//}
+	//r, err := p.Exec(boardID, t.Subject, t.Description, ip);
+	//// this isnt actually right. we could get result
+	//return r.LastInsertId()
 }
 
 func Open(c *cfg.C) (D, error) {

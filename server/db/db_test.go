@@ -5,6 +5,7 @@ import (
 	"dexchan/server/db"
 	"dexchan/server/cfg"
 	"github.com/stretchr/testify/assert"
+	"dexchan/server/model"
 )
 
 func TestDb_GetBoards(t *testing.T) {
@@ -30,5 +31,13 @@ func TestDb_GetBoards(t *testing.T) {
 		assert.NotEqual(t, b.Name, "")
 	}
 
+	newThread := &model.Thread{
+		Subject: "hello world",
+		Description: "hopefully a thread created",
+	}
+
+	tid, err := d.CreateThread(boards[0].ID, newThread, "192.168.1.1");
+	assert.NoError(t, err)
+	assert.NotEqual(t, 0, tid)
 	assert.NoError(t, d.Close())
 }

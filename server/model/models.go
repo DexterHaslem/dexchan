@@ -3,14 +3,14 @@ package model
 import "time"
 
 type AUser struct {
-	ID        int       `json:"id"`
+	ID        int64     `json:"id"`
 	IPAddress string    `json:"ip"`
 	FirstSeen time.Time `json:"firstSeen"`
 	LastSeen  time.Time `json:"firstSeen"`
 }
 
 type Login struct {
-	ID           int    `json:"id"`
+	ID           int64  `json:"id"`
 	Username     string `json:"username"`
 	PasswordHash string `json:"passwordHash"`
 	IsEnabled    bool   `json:"isEnabled"`
@@ -18,7 +18,7 @@ type Login struct {
 }
 
 type Board struct {
-	ID            int    `json:"id"`
+	ID            int64  `json:"id"`
 	Name          string `json:"name"`
 	ShortCode     string `json:"shortCode"`
 	Description   string `json:"description"`
@@ -26,15 +26,14 @@ type Board struct {
 }
 
 type Thread struct {
-	ID          int    `json:"id"`
-	Name        string `json:"name"`
+	ID          int64  `json:"id"`
 	Description string `json:"description"`
 	Subject     string `json:"subject"`
 	PostedByID  int    `json:"postedByID"`
 }
 
 type Post struct {
-	ID         int       `json:"ID"`
+	ID         int64     `json:"ID"`
 	Content    string    `json:"content"`
 	PostedAt   time.Time `json:"postedAt"`
 	IsHidden   bool      `json:"isHidden"`
@@ -42,7 +41,7 @@ type Post struct {
 }
 
 type Attachment struct {
-	ID                int    `json:"id"`
+	ID                int64  `json:"id"`
 	AttachmentTypeID  int    `json:"attachmentTypeID"`
 	OriginalFilename  string `json:"originalFilename"`
 	UploadedByID      int    `json:"uploadedByID"`
@@ -56,7 +55,7 @@ type PostWithAttachment struct {
 }
 
 type AttachmentType struct {
-	ID   int    `json:"id"`
+	ID   int64  `json:"id"`
 	Name string `json:"name"`
 	Ext  string `json:"ext"`
 	//	MaxSizeInBytes int `json:"maxSizeBytes"`
