@@ -61,10 +61,18 @@ func (d *db) CreatePost(p *model.Post, ip string) (int64, error) {
 	if err != nil {
 		return 0, err
 	}
+
 	var createdID int64
-	err = d.openedDB.QueryRow("INSERT INTO post (thread_id, content, posted_at, posted_by_id, hidden, attachment_orig_name, attachment_tn_loc, attachment_loc, attachment_size) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING id;",
-		p.ThreadID, p.Content, time.Now(), postedByID, false,
-		p.OriginalFilename, p.ThumbnailLocation, p.Location, p.Size).Scan(&createdID)
+	// post can have no attachment, we want to store nulls in this case,
+	// so handle this. kind of a pain because go is too cool to ternary
+	if p.Attachment != nil {
+		err = d.openedDB.QueryRow("INSERT INTO post (thread_id, content, posted_at, posted_by_id, hidden, attachment_orig_name, attachment_tn_loc, attachment_loc, attachment_size) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING id;",
+			p.ThreadID, p.Content, time.Now(), postedByID, false,
+			p.OriginalFilename, p.ThumbnailLocation, p.Location, p.Size).Scan(&createdID)
+	} else {
+		err = d.openedDB.QueryRow("INSERT INTO post (thread_id, content, posted_at, posted_by_id, hidden) VALUES ($1, $2, $3, $4, $5) RETURNING id;",
+			p.ThreadID, p.Content, time.Now(), postedByID, false).Scan(&createdID)
+	}
 	return createdID, err
 }
 

@@ -57,7 +57,7 @@ CREATE TABLE post (
   attachment_orig_name TEXT,
   attachment_tn_loc    TEXT,
   attachment_loc       TEXT,
-  attachment_size      INT                        NOT NULL
+  attachment_size      INT
 );
 
 

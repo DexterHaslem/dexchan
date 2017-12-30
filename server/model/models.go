@@ -45,7 +45,7 @@ type Post struct {
 	IsHidden   bool      `json:"isHidden"`
 	PostedByID int64     `json:"postedByID"`
 
-	Attachment
+	*Attachment
 }
 
 type Attachment struct {

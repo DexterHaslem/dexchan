@@ -49,11 +49,25 @@ func TestDb_GetBoards(t *testing.T) {
 
 		p := &model.Post{
 			ThreadID: tid,
-			Content: "shitposting",
+			Content: "shitposting something with no attachment",
 		}
 		pid, err := d.CreatePost(p, "192.168.1.2")
 		assert.NoError(t, err)
 		assert.NotEqual(t, 0, pid)
+
+		p2 := &model.Post{
+			ThreadID: tid,
+			Content: "shitposting something with attachment",
+			Attachment: &model.Attachment{
+				Size:              1024,
+				ThumbnailLocation: "Thumbnaillocation",
+				OriginalFilename:  "Orig filename.webm",
+				Location:          "cdn location",
+			},
+		}
+		pid2, err := d.CreatePost(p2, "192.168.1.2")
+		assert.NoError(t, err)
+		assert.NotEqual(t, 0, pid2)
 	}
 	assert.NoError(t, d.Close())
 }
