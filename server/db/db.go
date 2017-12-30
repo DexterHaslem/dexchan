@@ -11,6 +11,8 @@ import (
 
 type D interface {
 	GetBoards() ([]*model.Board, error)
+	CreatePost(threadID int, content, ip string) (int, error)
+	CreateThread(boardID int,t *model.Thread, ip string, attachmentID int) (int, error)
 	Close() error
 }
 
@@ -19,7 +21,7 @@ type db struct {
 }
 
 func (d *db) GetBoards() ([]*model.Board, error) {
-	q, err := d.openedDB.Query("select id, name, shortname, description, nsfw from board")
+	q, err := d.openedDB.Query("SELECT id, name, shortname, description, nsfw FROM board")
 	if err != nil {
 		return nil, err
 	}
@@ -42,6 +44,14 @@ func (d *db) GetBoards() ([]*model.Board, error) {
 
 func (d *db) Close() error {
 	return d.openedDB.Close()
+}
+
+func (d *db) CreatePost(threadID int, content, ip string) (int, error) {
+	return 0, nil
+}
+
+func (d *db) CreateThread(boardID int,t *model.Thread, ip string, attachmentID int) (int, error) {
+	return 0, nil
 }
 
 func Open(c *cfg.C) (D, error) {

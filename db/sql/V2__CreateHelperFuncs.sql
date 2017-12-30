@@ -86,6 +86,84 @@ END;
 $$
 LANGUAGE plpgsql;
 
+CREATE OR REPLACE FUNCTION get_threads(board_id INT)
+  RETURNS SETOF THREAD AS $$
+BEGIN
+  RETURN QUERY SELECT t.*
+               FROM board_thread bt
+                 INNER JOIN thread t ON bt.thread_id = t.id
+               WHERE bt.board_id = $1;
+END;
+$$
+LANGUAGE plpgsql;
+
+CREATE OR REPLACE FUNCTION get_threads_with_attachments(board_id INT)
+  RETURNS TABLE(
+    thread_id           INT,
+    thread_subject      TEXT,
+    thread_description  TEXT,
+    created_at          TIMESTAMP,
+    hidden              BOOLEAN,
+    attachment_origname TEXT,
+    attachment_tn_loc   TEXT,
+    attachment_loc      TEXT
+  ) AS $$
+BEGIN
+  RETURN QUERY
+  SELECT
+    ts.id                         AS thread_id,
+    ts.subject                    AS thread_subject,
+    ts.description                AS thread_description,
+    ts.created_at                 AS created_at,
+    ts.hidden                     AS hidden,
+    coalesce(a.orig_filename, '') AS attachment_origname,
+    coalesce(a.tn_location, '')   AS attachment_tn_loc,
+    coalesce(a.location, '')      AS attachment_loc
+  FROM get_threads($1) ts
+    INNER JOIN thread_attachment ta ON ta.thread_id = ts.id
+    LEFT JOIN attachment a ON ta.attachment_id = a.id;
+END;
+$$
+LANGUAGE plpgsql;
+
+CREATE OR REPLACE FUNCTION get_posts(thread_id INT)
+  RETURNS SETOF POST AS $$
+BEGIN
+  RETURN QUERY SELECT p.*
+               FROM thread_post tp
+                 INNER JOIN post p ON tp.post_id = p.id
+               WHERE tp.thread_id = $1;
+END;
+$$
+LANGUAGE plpgsql;
+
+CREATE OR REPLACE FUNCTION get_posts_with_attachments(thread_id INT)
+  RETURNS TABLE(
+    post_id             INT,
+    post_content        TEXT,
+    posted_at           TIMESTAMP,
+    hidden              BOOLEAN,
+    attachment_origname TEXT,
+    attachment_tn_loc   TEXT,
+    attachment_loc      TEXT
+  ) AS $$
+BEGIN
+  RETURN QUERY
+  SELECT
+    ps.id                         AS post_id,
+    ps.content                    AS post_content,
+    ps.posted_at                  AS posted_at,
+    ps.hidden                     AS hidden,
+    coalesce(a.orig_filename, '') AS attachment_origname,
+    coalesce(a.tn_location, '')   AS attachment_tn_loc,
+    coalesce(a.location, '')      AS attachment_loc
+  FROM get_posts($1) ps
+    INNER JOIN post_attachment pa ON pa.post_id = ps.id
+    LEFT JOIN attachment a ON pa.attachment_id = a.id;
+END;
+$$
+LANGUAGE plpgsql;
+
 CREATE OR REPLACE FUNCTION assign_attachment_post(pid INT, attachment_id INT)
   RETURNS VOID AS $$
 BEGIN
@@ -100,8 +178,9 @@ LANGUAGE plpgsql;
 CREATE OR REPLACE FUNCTION assign_attachment_thread(tid INT, attachment_id INT)
   RETURNS VOID AS $$
 BEGIN
-  delete from thread_attachment ta where ta.attachment_id = attachment_id;
-  insert into thread_attachment (thread_id, attachment_id) values (tid, attachment_id);
+  DELETE FROM thread_attachment ta
+  WHERE ta.attachment_id = attachment_id;
+  INSERT INTO thread_attachment (thread_id, attachment_id) VALUES (tid, attachment_id);
 END;
 $$
 LANGUAGE plpgsql;

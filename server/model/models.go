@@ -50,6 +50,11 @@ type Attachment struct {
 	ThumbnailLocation string `json:"tnLocation"`
 }
 
+type PostWithAttachment struct {
+	Post
+	Attachment
+}
+
 type AttachmentType struct {
 	ID   int    `json:"id"`
 	Name string `json:"name"`
