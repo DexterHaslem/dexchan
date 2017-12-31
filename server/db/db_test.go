@@ -65,6 +65,7 @@ func TestDb(t *testing.T) {
 				Location:          "cdn location",
 			},
 		}
+
 		pid2, err := d.CreatePost(p2, "192.168.1.2")
 		if assert.NoError(t, err) {
 			assert.NotEqual(t, 0, pid2)
@@ -73,6 +74,10 @@ func TestDb(t *testing.T) {
 			assert.NoError(t, err)
 			assert.True(t, len(posts) == 2)
 		}
+
+		threads, err := d.GetThreads(boards[0].ID)
+		assert.NoError(t, err)
+		assert.True(t, len(threads) >= 1)
 	}
 	assert.NoError(t, d.Close())
 }
