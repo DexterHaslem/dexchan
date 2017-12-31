@@ -54,10 +54,12 @@ CREATE TABLE post (
   posted_at            TIMESTAMP                  NOT NULL,
   posted_by_id         INT REFERENCES auser (id)  NOT NULL,
   hidden               BOOLEAN                    NOT NULL,
-  attachment_orig_name TEXT,
-  attachment_tn_loc    TEXT,
-  attachment_loc       TEXT,
-  attachment_size      INT
+  -- had to end up making these not null to not be a pain in the ass to scan
+  -- but blank is valid for post. need to add a check to thread to disallow blank
+  attachment_orig_name TEXT NOT NULL,
+  attachment_tn_loc    TEXT NOT NULL,
+  attachment_loc       TEXT NOT NULL,
+  attachment_size      INT  NOT NULL
 );
 
 

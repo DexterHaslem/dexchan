@@ -15,6 +15,8 @@ type D interface {
 	GetBoards() ([]*model.Board, error)
 	CreatePost(p *model.Post, ip string) (int64, error)
 	CreateThread(t *model.Thread, ip string) (int64, error)
+	GetThreads(boardID int64) ([]*model.Thread, error)
+	GetPosts(threadID int64) ([]*model.Post, error)
 	Close() error
 }
 
@@ -63,16 +65,11 @@ func (d *db) CreatePost(p *model.Post, ip string) (int64, error) {
 	}
 
 	var createdID int64
-	// post can have no attachment, we want to store nulls in this case,
-	// so handle this. kind of a pain because go is too cool to ternary
-	if p.Attachment != nil {
-		err = d.openedDB.QueryRow("INSERT INTO post (thread_id, content, posted_at, posted_by_id, hidden, attachment_orig_name, attachment_tn_loc, attachment_loc, attachment_size) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING id;",
-			p.ThreadID, p.Content, time.Now(), postedByID, false,
-			p.OriginalFilename, p.ThumbnailLocation, p.Location, p.Size).Scan(&createdID)
-	} else {
-		err = d.openedDB.QueryRow("INSERT INTO post (thread_id, content, posted_at, posted_by_id, hidden) VALUES ($1, $2, $3, $4, $5) RETURNING id;",
-			p.ThreadID, p.Content, time.Now(), postedByID, false).Scan(&createdID)
-	}
+
+	err = d.openedDB.QueryRow("INSERT INTO post (thread_id, content, posted_at, posted_by_id, hidden, attachment_orig_name, attachment_tn_loc, attachment_loc, attachment_size) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING id;",
+		p.ThreadID, p.Content, time.Now(), postedByID, false,
+		p.OriginalFilename, p.ThumbnailLocation, p.Location, p.Size).Scan(&createdID)
+
 	return createdID, err
 }
 
@@ -86,6 +83,51 @@ func (d *db) CreateThread(t *model.Thread, ip string) (int64, error) {
 		t.BoardID, t.Subject, t.Description, time.Now(), postedByID, false,
 		t.OriginalFilename, t.ThumbnailLocation, t.Location, t.Size).Scan(&createdID)
 	return createdID, err
+}
+
+func (d *db) GetThreads(boardID int64) ([]*model.Thread, error) {
+	q, err := d.openedDB.Query("SELECT id,created_at, created_by_id,description,subject,attachment_loc,attachment_orig_name,attachment_tn_loc, attachment_size FROM thread t WHERE t.board_id = $1 ORDER BY t.created_at DESC", boardID)
+	if err != nil {
+		return nil, err
+	}
+
+	ret := make([]*model.Thread, 0)
+	for q.Next() {
+		t := &model.Thread{}
+
+		err = q.Scan(&t.ID, &t.CreatedAt, &t.PostedByID, &t.Description, &t.Subject, &t.Location,
+			&t.OriginalFilename, &t.ThumbnailLocation, &t.Size)
+		if err != nil {
+			return ret, err
+		}
+		ret = append(ret, t)
+	}
+
+	return ret, nil
+}
+
+func (d *db) GetPosts(threadID int64) ([]*model.Post, error) {
+	// beware, if we scan we need to provide a value for null attachments. kinda defeats the point of null, hmm
+	// removed nullable in db instead :-(
+	q, err := d.openedDB.Query("SELECT id, posted_at, posted_by_id, content, attachment_size, attachment_tn_loc, attachment_loc, attachment_orig_name FROM post p WHERE p.thread_id = $1", threadID)
+	if err != nil {
+		return nil, err
+	}
+
+	ret := make([]*model.Post, 0)
+	for q.Next() {
+		p := &model.Post{}
+
+		err = q.Scan(&p.ID, &p.PostedAt, &p.PostedByID, &p.Content,
+			&p.Size, &p.ThumbnailLocation, &p.Location, &p.OriginalFilename)
+
+		if err != nil {
+			return ret, err
+		}
+		ret = append(ret, p)
+	}
+
+	return ret, nil
 }
 
 func Open(c *cfg.C) (D, error) {

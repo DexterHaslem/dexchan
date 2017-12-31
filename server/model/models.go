@@ -28,12 +28,12 @@ type Board struct {
 }
 
 type Thread struct {
-	ID          int64  `json:"id"`
-	BoardID     int64  `json:"boardID"`
-	Description string `json:"description"`
-	Subject     string `json:"subject"`
-	PostedByID  int64  `json:"postedByID"`
-
+	ID          int64     `json:"id"`
+	BoardID     int64     `json:"boardID"`
+	Description string    `json:"description"`
+	Subject     string    `json:"subject"`
+	PostedByID  int64     `json:"postedByID"`
+	CreatedAt   time.Time `json:"createdAt"`
 	Attachment
 }
 
@@ -44,8 +44,7 @@ type Post struct {
 	PostedAt   time.Time `json:"postedAt"`
 	IsHidden   bool      `json:"isHidden"`
 	PostedByID int64     `json:"postedByID"`
-
-	*Attachment
+	Attachment
 }
 
 type Attachment struct {

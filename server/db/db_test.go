@@ -8,7 +8,7 @@ import (
 	"dexchan/server/model"
 )
 
-func TestDb_GetBoards(t *testing.T) {
+func TestDb(t *testing.T) {
 	c := cfg.C{
 		DbName:     "dexchan",
 		DbHost:     "localhost",
@@ -58,7 +58,7 @@ func TestDb_GetBoards(t *testing.T) {
 		p2 := &model.Post{
 			ThreadID: tid,
 			Content: "shitposting something with attachment",
-			Attachment: &model.Attachment{
+			Attachment: model.Attachment{
 				Size:              1024,
 				ThumbnailLocation: "Thumbnaillocation",
 				OriginalFilename:  "Orig filename.webm",
@@ -66,8 +66,13 @@ func TestDb_GetBoards(t *testing.T) {
 			},
 		}
 		pid2, err := d.CreatePost(p2, "192.168.1.2")
-		assert.NoError(t, err)
-		assert.NotEqual(t, 0, pid2)
+		if assert.NoError(t, err) {
+			assert.NotEqual(t, 0, pid2)
+
+			posts, err := d.GetPosts(tid)
+			assert.NoError(t, err)
+			assert.True(t, len(posts) == 2)
+		}
 	}
 	assert.NoError(t, d.Close())
 }
