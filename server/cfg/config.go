@@ -7,6 +7,7 @@ import (
 
 // C is the configuration options for server to use
 type C struct {
+	StaticDir  string `json:"staticDir"`
 	DbName     string `json:"dbName"`
 	DbHost     string `json:"dbHost"`
 	DbPort     int    `json:"dbPort"`
