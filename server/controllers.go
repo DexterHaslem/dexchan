@@ -41,11 +41,11 @@ func (s *Server) getThreads(w http.ResponseWriter, r *http.Request) {
 	}
 	tx, err := s.Db.GetThreads(board.ID)
 	if err != nil {
-		http.Error(w,err.Error(), http.StatusInternalServerError)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
-	writeJson(w,r, tx)
+	writeJson(w, r, tx)
 }
 
 func (s *Server) getPosts(w http.ResponseWriter, r *http.Request) {
@@ -55,14 +55,33 @@ func (s *Server) getPosts(w http.ResponseWriter, r *http.Request) {
 	}
 
 	v := mux.Vars(r)
-	threadIDs := v["thread"]
+	threadIDstr := v["thread"]
 	// regex matched, will always be good
-	threadID, _ := strconv.Atoi(threadIDs)
+	threadID, _ := strconv.Atoi(threadIDstr)
 	posts, err := s.Db.GetPosts(int64(threadID))
 	if err != nil {
-		http.Error(w,err.Error(), http.StatusInternalServerError)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
-	writeJson(w,r, posts)
+	writeJson(w, r, posts)
+}
+
+func (s *Server) createThread(w http.ResponseWriter, r *http.Request) {
+	board := s.tryGetBoard(w, r)
+	if board == nil {
+		return
+	}
+
+	//s.Db.Creat
+}
+
+func (s *Server) createPost(w http.ResponseWriter, r *http.Request) {
+	board := s.tryGetBoard(w, r)
+	if board == nil {
+		return
+	}
+
+	//v := mux.Vars(r)
+	//threadIDs := v["thread"]
 }

@@ -9,29 +9,32 @@ import (
 	"dexchan/server/model"
 	"log"
 )
+
 type Server struct {
 	Config *cfg.C
-	Db dexDB.D
+	Db     dexDB.D
 
-	boards []*model.Board
+	boards            []*model.Board
 	boardsByShortcode map[string]*model.Board
 }
 
-func (s *Server)  staticRoot(w http.ResponseWriter, r *http.Request) {
+func (s *Server) staticRoot(w http.ResponseWriter, r *http.Request) {
 	http.ServeFile(w, r, r.URL.Path[1:])
 }
 
 func (s *Server) Start() {
-	//fs := http.FileServer(http.Dir(s.Config.StaticDir))
-	//http.Handle("/static/", http.StripPrefix("/static", fs))
-	//http.HandleFunc("/api/boards", s.getBoards)
-	//http.HandleFunc("/", s.staticRoot)
+	fs := http.FileServer(http.Dir(s.Config.StaticDir))
+	http.Handle("/static/", http.StripPrefix("/static", fs))
 
-	// didnt want to pull in any deps but argh, need them path args
 	router := mux.NewRouter()
+
 	router.HandleFunc("/api/boards", s.getBoards).Methods("GET")
 	router.HandleFunc("/api/{board:[a-z]+}", s.getThreads).Methods("GET")
 	router.HandleFunc("/api/{board:[a-z]+}/{thread:[0-9]+}", s.getPosts).Methods("GET")
+
+	router.HandleFunc("/api/{board:[a-z]+}/thread", s.createThread).Methods("POST")
+	router.HandleFunc("/api/{board:[a-z]+}/{thread:[0-9]+}/post", s.createPost).Methods("POST")
+
 	http.Handle("/", router)
 
 	// get boards right away
