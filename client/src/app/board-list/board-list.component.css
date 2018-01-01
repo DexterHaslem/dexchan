@@ -1,0 +1,7 @@
+.board-list-container {
+  display: flex;
+  text-align: center;
+  flex-direction: column;
+  flex-basis: fit-content;
+  margin: 15px;
+}

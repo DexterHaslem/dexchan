@@ -1,10 +1,12 @@
-<p>
-  board-list works!
+<div class="intro">
+  <p>welcome to dexChan. Please select a board below</p>
+</div>
 
-</p>
-<div>
-  <div *ngFor="let board of boards$ | async">
-  {{board.name}}
-    {{board.description}}
-  </div>
+<div class="board-list-container">
+  <app-board-info-card [board]="board" *ngFor="let board of boards$ | async">
+  </app-board-info-card>
+</div>
+
+<div class="terms">
+
 </div>

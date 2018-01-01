@@ -10,10 +10,11 @@ import { BrowserAnimationsModule } from "@angular/platform-browser/animations";
 import { ApiService } from './api.service';
 import { AppRoutingModule } from './app-routing.module';
 import {
-  MatButtonModule, MatCardModule, MatCommonModule, MatGridListModule,
-  MatSnackBarModule
+  MatButtonModule, MatCardModule, MatCommonModule, MatGridListModule, MatIconModule, MatListModule,
+  MatOptionModule, MatPaginatorModule, MatSelectModule, MatSlideToggleModule, MatSnackBarModule
 } from "@angular/material";
 import { HttpClientModule } from "@angular/common/http";
+import { BoardInfoCardComponent } from './board-info-card/board-info-card.component';
 
 
 @NgModule({
@@ -21,17 +22,24 @@ import { HttpClientModule } from "@angular/common/http";
     AppComponent,
     BoardListComponent,
     ThreadsComponent,
-    PostsComponent
+    PostsComponent,
+    BoardInfoCardComponent
   ],
   imports: [
     BrowserModule,
     BrowserAnimationsModule,
     AppRoutingModule,
     MatCommonModule,
+    MatSlideToggleModule,
     MatGridListModule,
     MatSnackBarModule,
     MatCardModule,
+    MatListModule,
     MatButtonModule,
+    MatIconModule,
+    MatPaginatorModule,
+    MatSelectModule,
+    MatOptionModule,
     HttpClientModule
   ],
   providers: [ApiService],
