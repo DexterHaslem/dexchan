@@ -9,6 +9,11 @@ import { PostsComponent } from './posts/posts.component';
 import { BrowserAnimationsModule } from "@angular/platform-browser/animations";
 import { ApiService } from './api.service';
 import { AppRoutingModule } from './app-routing.module';
+import {
+  MatButtonModule, MatCardModule, MatCommonModule, MatGridListModule,
+  MatSnackBarModule
+} from "@angular/material";
+import { HttpClientModule } from "@angular/common/http";
 
 
 @NgModule({
@@ -21,7 +26,13 @@ import { AppRoutingModule } from './app-routing.module';
   imports: [
     BrowserModule,
     BrowserAnimationsModule,
-    AppRoutingModule
+    AppRoutingModule,
+    MatCommonModule,
+    MatGridListModule,
+    MatSnackBarModule,
+    MatCardModule,
+    MatButtonModule,
+    HttpClientModule
   ],
   providers: [ApiService],
   bootstrap: [AppComponent]

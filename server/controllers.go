@@ -17,6 +17,7 @@ func writeJson(w http.ResponseWriter, r *http.Request, v interface{}) {
 }
 
 func (s *Server) getBoards(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Access-Control-Allow-Origin", "*")
 	writeJson(w, r, s.boards)
 }
 
@@ -35,6 +36,7 @@ func (s *Server) tryGetBoard(w http.ResponseWriter, r *http.Request) *model.Boar
 	return found
 }
 func (s *Server) getThreads(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Access-Control-Allow-Origin", "*")
 	board := s.tryGetBoard(w, r)
 	if board == nil {
 		return
@@ -49,6 +51,7 @@ func (s *Server) getThreads(w http.ResponseWriter, r *http.Request) {
 }
 
 func (s *Server) getPosts(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Access-Control-Allow-Origin", "*")
 	board := s.tryGetBoard(w, r)
 	if board == nil {
 		return

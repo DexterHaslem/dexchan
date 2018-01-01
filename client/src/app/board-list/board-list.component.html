@@ -1,3 +1,10 @@
 <p>
   board-list works!
+
 </p>
+<div>
+  <div *ngFor="let board of boards$ | async">
+  {{board.name}}
+    {{board.description}}
+  </div>
+</div>
