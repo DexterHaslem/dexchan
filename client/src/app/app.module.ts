@@ -15,6 +15,7 @@ import {
 } from "@angular/material";
 import { HttpClientModule } from "@angular/common/http";
 import { BoardInfoCardComponent } from './board-info-card/board-info-card.component';
+import { ThreadItemComponent } from './thread-item/thread-item.component';
 
 
 @NgModule({
@@ -23,7 +24,8 @@ import { BoardInfoCardComponent } from './board-info-card/board-info-card.compon
     BoardListComponent,
     ThreadsComponent,
     PostsComponent,
-    BoardInfoCardComponent
+    BoardInfoCardComponent,
+    ThreadItemComponent
   ],
   imports: [
     BrowserModule,

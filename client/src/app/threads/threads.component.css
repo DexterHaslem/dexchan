@@ -1,0 +1,4 @@
+.thread-container {
+  display: flex;
+  flex-direction: row;
+}
