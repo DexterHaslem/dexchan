@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="stylesheet" href="/static/main.css">
+    <meta charset="UTF-8">
+    <title>dexChan</title>
+</head>
+<style>
+
+</style>
+<body>
+
+{{define "body"}}
+<h2>dexChan</h2>
+
+<div class="container">
+    <div class="container-item">
+        <h4>Boards</h4>
+    {{ with .Boards }}
+        <div class="board-list">
+        {{ range . }}
+            <span><a href="{{.ShortCode}}">{{.Name}} ({{.ShortCode}})</a> - {{.Description}}</span>
+        {{end}}
+        </div>
+    {{end}}
+    </div>
+
+    <div class="container-item">
+        <h4>Recent Threads</h4>
+        <span>todo</span>
+    </div>
+
+    <div class="container-item">
+        <h4>Recent Posts</h4>
+        <span>todo</span>
+    </div>
+</div>
+
+<div class="rules">
+    Rules
+    blah blah avlah
+</div>
+{{end}}
+</body>
+</html>

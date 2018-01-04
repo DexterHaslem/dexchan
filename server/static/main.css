@@ -1,0 +1,26 @@
+.container {
+    display: flex;
+    flex-direction: row;
+}
+
+.container-item {
+    margin: 5px;
+    flex-grow: 1;
+    padding: 2px 10px;
+    border: 1px solid black;
+}
+
+.board-list {
+    display: flex;
+    flex-direction: column;
+}
+
+.rules {
+    text-align: center;
+    border: 1px solid black;
+}
+
+h4 {
+    padding: 0;
+    margin: 0;
+}
