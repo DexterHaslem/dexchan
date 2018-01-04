@@ -1,10 +1,10 @@
-<div class="intro">
-  <p>welcome to dexChan. Please select a board below</p>
-</div>
-
 <div class="board-list-container">
-  <app-board-info-card [board]="board" *ngFor="let board of boards$ | async">
-  </app-board-info-card>
+  <mat-list>
+    <mat-list-item>
+      <app-board-info-card [board]="board" *ngFor="let board of boards$ | async">
+      </app-board-info-card>
+    </mat-list-item>
+  </mat-list>
 </div>
 
 <div class="terms">
