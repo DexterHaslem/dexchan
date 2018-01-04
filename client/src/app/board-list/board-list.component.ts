@@ -1,5 +1,4 @@
 import { Component, OnInit } from '@angular/core';
-import { ApiService } from "../api.service";
 import { Observable } from "rxjs/Observable";
 
 @Component({
@@ -11,7 +10,7 @@ export class BoardListComponent implements OnInit {
 
   boards$: Observable<Board[]>;
 
-  constructor(private api: ApiService) {
+  constructor() {
   }
 
   ngOnInit() {

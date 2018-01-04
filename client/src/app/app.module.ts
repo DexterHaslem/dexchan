@@ -19,6 +19,7 @@ import { BoardInfoCardComponent } from './board-info-card/board-info-card.compon
 import { ThreadItemComponent } from './thread-item/thread-item.component';
 import { FormsModule, ReactiveFormsModule } from "@angular/forms";
 import { CdkTableModule } from "@angular/cdk/table";
+import { StoreModule } from "./store/store.module";
 
 
 @NgModule({
@@ -52,7 +53,8 @@ import { CdkTableModule } from "@angular/cdk/table";
     MatNativeDateModule,
     MatOptionModule,
     MatSelectModule,
-    HttpClientModule
+    HttpClientModule,
+    StoreModule
   ],
   providers: [ApiService],
   bootstrap: [AppComponent]
