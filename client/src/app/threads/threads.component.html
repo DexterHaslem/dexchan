@@ -1,9 +1,0 @@
-<p>
-  threads works! board: {{ boardName }}
-</p>
-
-<div class="thread-container">
-  <div *ngFor="let thread of threads$ | async">
-    <app-thread-item [thread]="thread"></app-thread-item>
-  </div>
-</div>
