@@ -33,8 +33,8 @@ func (s *Server) Start() {
 	router := mux.NewRouter()
 
 	router.HandleFunc("/", s.homeHandler).Methods("GET")
-	//router.HandleFunc("/{board:[a-z]+}", s.getThreads).Methods("GET")
-	//router.HandleFunc("/{board:[a-z]+}/{thread:[0-9]+}", s.getPosts).Methods("GET")
+	router.HandleFunc("/{board:[a-z]+}", s.boardHandler).Methods("GET")
+	router.HandleFunc("/{board:[a-z]+}/{thread:[0-9]+}", s.threadHandler).Methods("GET")
 	//
 	//router.HandleFunc("/{board:[a-z]+}/thread", s.createThread).Methods("POST")
 	//router.HandleFunc("/{board:[a-z]+}/{thread:[0-9]+}/post", s.createPost).Methods("POST")

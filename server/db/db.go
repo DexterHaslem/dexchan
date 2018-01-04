@@ -16,6 +16,7 @@ type D interface {
 	CreatePost(p *model.Post, ip string) (int64, error)
 	CreateThread(t *model.Thread, ip string) (int64, error)
 	GetThreads(boardID int64) ([]*model.Thread, error)
+	GetThread(threadID int64) (*model.Thread, error)
 	GetPosts(threadID int64) ([]*model.Post, error)
 	Close() error
 }
@@ -83,6 +84,18 @@ func (d *db) CreateThread(t *model.Thread, ip string) (int64, error) {
 		t.BoardID, t.Subject, t.Description, time.Now(), postedByID, false,
 		t.OriginalFilename, t.ThumbnailLocation, t.Location, t.Size).Scan(&createdID)
 	return createdID, err
+}
+
+func (d *db) GetThread(threadID int64) (*model.Thread, error) {
+	t := &model.Thread{}
+	err := d.openedDB.QueryRow("SELECT id,created_at,created_by_id,description,subject,attachment_loc,attachment_orig_name,attachment_tn_loc, attachment_size FROM thread t WHERE t.id = $1", threadID).
+		Scan(&t.ID, &t.CreatedAt, &t.PostedByID, &t.Description, &t.Subject, &t.Location,
+		&t.OriginalFilename, &t.ThumbnailLocation, &t.Size)
+	if err != nil {
+		return nil, err
+	}
+
+	return t, nil
 }
 
 func (d *db) GetThreads(boardID int64) ([]*model.Thread, error) {

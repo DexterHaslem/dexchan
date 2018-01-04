@@ -15,12 +15,49 @@
     flex-direction: column;
 }
 
+.board-description {
+    text-align: center;
+    font-style: italic;
+}
+
+.thread-container {
+    margin: 10px;
+    display: flex;
+    flex-direction: column;
+    width: 50%;
+}
+
+.thread-preview-container {
+    display: flex;
+    flex-direction: row;
+
+    margin: 15px;
+    border-top: 1px solid dodgerblue;
+    border-collapse: collapse;
+}
+
+.thread-preview-info-bottom {
+    flex-grow: 1;
+    display: flex;
+    align-items: flex-end;
+}
+
+.thread-preview-info {
+    display: flex;
+    flex-direction: column;
+    margin: 10px;
+}
+
+.board-header {
+    text-align: center;
+}
+
 .rules {
     text-align: center;
     border: 1px solid black;
 }
 
-h4 {
+h1, h2, h3, h4, h5, h6 {
     padding: 0;
     margin: 0;
 }

@@ -3,11 +3,12 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>{{template "title"}}</title>
     <link rel="stylesheet" href="/static/main.css">
+    <title>{{template "title" .}}</title>
 </head>
 <body>
-{{template "body"}}
+<!-- dont forget to pass our data object down -->
+{{template "body" .}}
 </body>
 </html>
 {{end}}

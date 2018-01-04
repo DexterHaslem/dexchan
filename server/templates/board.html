@@ -1,0 +1,32 @@
+{{define "title"}}{{.Board.ShortCode}} - {{.Board.Name}}{{end}}
+
+{{define "body"}}
+<h2 class="board-header">{{.Board.ShortCode}} - {{.Board.Name}}</h2>
+<h5 class="board-description">{{.Board.Description}}</h5>
+
+
+{{ $b := .Board }}
+<div class="thread-container">
+
+
+    <h4><a href="/{{$b.ShortCode}}/new">Create thread</a></h4>
+
+
+{{ range $t := .Threads }}
+    <div class="thread-preview-container">
+        <img src="{{ $t.ThumbnailLocation }}">
+        <div class="thread-preview-info">
+            <span>{{ $t.CreatedAt }} - {{ $t.Subject }}</span>
+            <span>{{ $t.Description }}</span>
+
+            <div class="thread-preview-info-bottom">
+                <span>R: #</span>
+                <span>I: #</span>
+                <a href="/{{$b.ShortCode}}/{{$t.ID}}">Reply/view</a>
+            </div>
+        </div>
+    </div>
+{{ end }}
+
+</div>
+{{end}}
