@@ -2,17 +2,8 @@
   threads works! board: {{ boardName }}
 </p>
 
-
 <div class="thread-container">
   <div *ngFor="let thread of threads$ | async">
     <app-thread-item [thread]="thread"></app-thread-item>
   </div>
 </div>
-
-
-<mat-paginator
-  [length]="1000"
-  [pageSize]="10"
-  [pageSizeOptions]="[10, 20, 50, 100]">
-  <span> foo</span>
-</mat-paginator>

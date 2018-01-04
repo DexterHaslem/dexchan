@@ -17,6 +17,12 @@ export class ThreadsComponent implements OnInit {
               private api: ApiService) {
   }
 
+  foods = [
+    {value: 'steak-0', viewValue: 'Steak'},
+    {value: 'pizza-1', viewValue: 'Pizza'},
+    {value: 'tacos-2', viewValue: 'Tacos'}
+  ];
+
   ngOnInit() {
     this.threads$ = this.route.paramMap
       .switchMap((params: ParamMap) => this.api.getThreads(params.get('board')));

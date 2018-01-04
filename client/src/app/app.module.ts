@@ -11,11 +11,14 @@ import { ApiService } from './api.service';
 import { AppRoutingModule } from './app-routing.module';
 import {
   MatButtonModule, MatCardModule, MatCommonModule, MatGridListModule, MatIconModule, MatListModule,
-  MatOptionModule, MatPaginatorModule, MatSelectModule, MatSlideToggleModule, MatSnackBarModule
+  MatNativeDateModule, MatOptionModule, MatPaginatorModule, MatRadioModule, MatSelectModule, MatSidenavModule,
+  MatSlideToggleModule, MatSnackBarModule, MatToolbarModule
 } from "@angular/material";
 import { HttpClientModule } from "@angular/common/http";
 import { BoardInfoCardComponent } from './board-info-card/board-info-card.component';
 import { ThreadItemComponent } from './thread-item/thread-item.component';
+import { FormsModule, ReactiveFormsModule } from "@angular/forms";
+import { CdkTableModule } from "@angular/cdk/table";
 
 
 @NgModule({
@@ -28,20 +31,27 @@ import { ThreadItemComponent } from './thread-item/thread-item.component';
     ThreadItemComponent
   ],
   imports: [
+    CdkTableModule,
     BrowserModule,
     BrowserAnimationsModule,
+    FormsModule,
     AppRoutingModule,
     MatCommonModule,
+    MatRadioModule,
     MatSlideToggleModule,
     MatGridListModule,
     MatSnackBarModule,
     MatCardModule,
+    MatToolbarModule,
     MatListModule,
     MatButtonModule,
     MatIconModule,
+    MatSidenavModule,
     MatPaginatorModule,
-    MatSelectModule,
+    ReactiveFormsModule,
+    MatNativeDateModule,
     MatOptionModule,
+    MatSelectModule,
     HttpClientModule
   ],
   providers: [ApiService],
