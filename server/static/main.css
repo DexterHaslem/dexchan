@@ -3,6 +3,18 @@
     flex-direction: row;
 }
 
+.top-board-list {
+    display: flex;
+    flex-direction: row;
+    text-align: center;
+    margin: 0;
+    padding: 0;
+}
+
+.top-board-list > a {
+    flex-grow: 0;
+    margin: 1px 6px;
+}
 .container-item {
     margin: 5px;
     flex-grow: 1;
@@ -25,6 +37,11 @@
     display: flex;
     flex-direction: column;
     width: 50%;
+}
+
+.flex-col {
+    display: flex;
+    flex-direction: column;
 }
 
 .thread-preview-container {
@@ -59,5 +76,17 @@
 
 h1, h2, h3, h4, h5, h6 {
     padding: 0;
-    margin: 0;
+    margin: 3px 1px;
+}
+
+.post-container {
+    margin: 2%;
+}
+
+.post-item {
+
+}
+
+body {
+    background-color: rgba(243, 243, 243, 0.98);
 }

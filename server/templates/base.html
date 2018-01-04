@@ -7,6 +7,13 @@
     <title>{{template "title" .}}</title>
 </head>
 <body>
+<div class="top-board-list">
+    <span>[</span>
+{{ range .Boards }}
+    <a href="/{{.ShortCode}}">/{{.ShortCode}}</a>
+{{ end}}
+    <span>]</span>
+</div>
 <!-- dont forget to pass our data object down -->
 {{template "body" .}}
 </body>

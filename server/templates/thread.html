@@ -1,8 +1,35 @@
 {{define "title"}}{{.Board.ShortCode}} - {{.Thread.Subject}}{{end}}
 
 {{define "body"}}
+{{ $t := .Thread }}
+{{ $b := .Board }}
+<h2 class="board-header">{{$b.ShortCode}} - {{$b.Name}}</h2>
+<h5 class="board-description">{{$b.Description}}</h5>
 
+
+<div class="thread-preview-container">
+    <div class="flex-col">
+        <span><em>{{$t.OriginalFilename}}</em></span>
+        <img src="{{ $t.ThumbnailLocation }}">
+    </div>
+
+    <div class="thread-preview-info">
+        <span>{{ $t.CreatedAt }} - {{ $t.Subject }}</span>
+        <span>{{ $t.Description }}</span>
+        <a href="/{{$b.ShortCode}}/{{$t.ID}}/post">Reply</a>
+    </div>
+</div>
+<span>Replies: #</span>
+<span>Attachments: #</span>
+
+<div class="post-container">
 {{range .Posts}}
-<h4>post</h4>
+    <div class="post-item">
+        <span>{{ .PostedAt }}</span>
+        <span>{{ .Content }}</span>
+    </div>
+
 {{end}}
+</div>
+
 {{end}}

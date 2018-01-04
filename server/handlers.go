@@ -15,6 +15,14 @@ import (
 const alwaysParseTemplate = true
 const baseTemplate = "templates/base.html"
 
+type State struct {
+	Boards  []*model.Board
+	Threads []*model.Thread
+	Board   *model.Board
+	Thread  *model.Thread
+	Posts   []*model.Post
+}
+
 func (s *Server) getCachedTemplate(name string) *template.Template {
 	t, ok := s.templatesCache[name]
 	if !ok || alwaysParseTemplate {
@@ -34,9 +42,10 @@ func (s *Server) homeHandler(w http.ResponseWriter, r *http.Request) {
 	fp := filepath.Join("templates", "index.html")
 	t := s.getCachedTemplate(fp)
 
-	t.ExecuteTemplate(w, "base", struct {
-		Boards []*model.Board
-	}{s.boards})
+	state := State{
+		Boards: s.boards,
+	}
+	t.ExecuteTemplate(w, "base", state)
 }
 
 func (s *Server) tryGetBoard(w http.ResponseWriter, r *http.Request) *model.Board {
@@ -64,10 +73,13 @@ func (s *Server) boardHandler(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	t.ExecuteTemplate(w, "base", struct {
-		Board   *model.Board
-		Threads []*model.Thread
-	}{b, tx})
+
+	state := State{
+		Boards:  s.boards,
+		Board:   b,
+		Threads: tx,
+	}
+	t.ExecuteTemplate(w, "base", state)
 }
 
 func (s *Server) threadHandler(w http.ResponseWriter, r *http.Request) {
@@ -88,9 +100,11 @@ func (s *Server) threadHandler(w http.ResponseWriter, r *http.Request) {
 
 	posts, _ := s.Db.GetPosts(tn)
 
-	t.ExecuteTemplate(w, "base", struct {
-		Board  *model.Board
-		Thread *model.Thread
-		Posts  []*model.Post
-	}{b, thread, posts})
+	state := State{
+		Boards: s.boards,
+		Board:  b,
+		Thread: thread,
+		Posts:  posts,
+	}
+	t.ExecuteTemplate(w, "base", state)
 }
