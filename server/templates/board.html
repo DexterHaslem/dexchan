@@ -13,11 +13,11 @@
     <div class="thread-preview-container">
         <div>
         {{if $t.IsVideo}}
-            <video controls muted loop preload="metadata">
+            <video controls muted loop preload="metadata" class="t-media">
                 <source src="{{$t.ThumbnailLocation}}" type="video/webm">
             </video>
         {{else}}
-            <img src="{{$t.ThumbnailLocation}}">
+            <a href="/{{$b.ShortCode}}/{{$t.ID}}"><img src="{{$t.ThumbnailLocation}}" class="t-media"></a>
         {{end}}
         </div>
 

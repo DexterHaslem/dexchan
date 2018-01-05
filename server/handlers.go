@@ -243,11 +243,9 @@ func (s *Server) addThreadHandler(w http.ResponseWriter, r *http.Request) {
 	newThread.Location = fmt.Sprintf("/%s/%s/%s", s.Config.StaticDir, bn, fn)
 
 	// start saving it to disk. this is dumb atm
-	// dont bother trying to go func it. redirect will not work
-	//go func() {
-
-		// TODO: partial writes
-		io.Copy(saveFile, sentFile)
+	// dont try anything cute like goroutines otherwise go will return a 200 for you
+	// TODO: partial writes
+	io.Copy(saveFile, sentFile)
 	sentFile.Close()
 	// we need to reset file pos so resizer starts at correct spot
 	saveFile.Seek(0, 0)
@@ -270,9 +268,7 @@ func (s *Server) addThreadHandler(w http.ResponseWriter, r *http.Request) {
 	// TODO: hardcoded proto atm :-(
 	url := fmt.Sprintf("http://%s/%s/%d", r.Host, bn, createdID)
 	http.Redirect(w, r, url, http.StatusSeeOther)
-	//}()
 }
-
 
 func (s *Server) addReplyHandler(w http.ResponseWriter, r *http.Request) {
 	v := mux.Vars(r)

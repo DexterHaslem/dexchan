@@ -15,8 +15,8 @@ const (
 	// but thumbnail doesnt work like that, it trys to resize both bounds
 	// with keeping of aspect ratio
 
-	MaxWidth  = 400
-	MaxHeight = 400
+	MaxWidth  = 350
+	MaxHeight = 350
 )
 
 // createThumbnail will create thumbnail of file already open

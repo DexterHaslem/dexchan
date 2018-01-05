@@ -10,25 +10,23 @@
 <div class="thread-preview-container">
     <div>
     {{if $t.IsVideo}}
-        <video controls muted loop preload="metadata">
+        <video controls muted loop preload="metadata" class="t-media">
             <source src="{{$t.ThumbnailLocation}}" type="video/webm">
         </video>
     {{else}}
-        <img src="{{$t.ThumbnailLocation}}">
+        <img src="{{$t.ThumbnailLocation}}" class="t-media">
     {{end}}
     </div>
 
     <div class="thread-preview-info">
         <span>{{ $t.CreatedAt }}</span>
-        <span>Filename: <em>{{$t.OriginalFilename}}</em></span>
+        <span>Filename: <em><a href="{{$t.Location}}" target="_blank">{{$t.OriginalFilename}}</a></em></span>
         <span>Subject: <strong>{{ $t.Subject }}</strong></span>
         <span class="thread-contents">{{ $t.Description }}</span>
 
         <a href="/{{$b.ShortCode}}/{{$t.ID}}/reply">Add Reply</a>
         <span><a href="#bottom">Go to bottom</a></span>
     </div>
-
-
 </div>
 <div>
     <span>Replies: #</span>
@@ -44,13 +42,13 @@
 
     {{if .HasAttachment}}
         <div class="attachment-container">
-            <span>Filename: <em>{{$t.OriginalFilename}}</em></span>
+            <span>Filename: <a href="{{.Location}}" target="_blank"><em>{{.OriginalFilename}}</em></a></span>
         {{if .IsVideo}}
-            <video controls muted loop preload="metadata">
+            <video controls muted loop preload="metadata" class="t-media">
                 <source src="{{.ThumbnailLocation}}" type="video/webm">
             </video>
         {{else}}
-            <img src="{{.ThumbnailLocation}}">
+            <img src="{{.ThumbnailLocation}}" class="t-media">
         {{end}}
 
         </div>
