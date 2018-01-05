@@ -13,6 +13,7 @@ import (
 	"os"
 	"time"
 	"html"
+	"io/ioutil"
 )
 
 // TEMP: always parse template, makes editing easier during development
@@ -206,6 +207,8 @@ func (s *Server) addThreadHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// IMPORTANT: if you dont close body, redirect wont work
+	r.Body.Close()
 	newThread := &model.Thread{
 		Subject:     sub,
 		Description: desc,
@@ -223,7 +226,9 @@ func (s *Server) addThreadHandler(w http.ResponseWriter, r *http.Request) {
 	// security: we could get in a bogus header with traversal exploitation so chop to base
 	// dont use original filename, timestamp fn := filepath.Base(fileHeader.Filename)
 	origExt := filepath.Ext(fileHeader.Filename)
-	fn := fmt.Sprintf("%d%s", time.Now().Unix(), origExt)
+	// save this once so we dont get drift when making thumbnail
+	timestamp := time.Now().Unix()
+	fn := fmt.Sprintf("%d%s", timestamp, origExt)
 	saveFn := filepath.Join(saveDir, fn)
 	saveFile, err := os.Create(saveFn)
 	if err != nil {
@@ -236,17 +241,23 @@ func (s *Server) addThreadHandler(w http.ResponseWriter, r *http.Request) {
 	// \static\bn\fn.ext which wont work as an url of course. build manually :-(
 	// !! CDN HOOK
 	newThread.Location = fmt.Sprintf("/%s/%s/%s", s.Config.StaticDir, bn, fn)
-	// TODO: thumbnail creation
-	newThread.ThumbnailLocation = newThread.Location
 
 	// start saving it to disk. this is dumb atm
-	go func() {
-		defer r.Body.Close()
-		defer sentFile.Close()
-		defer saveFile.Close()
+	// dont bother trying to go func it. redirect will not work
+	//go func() {
+
 		// TODO: partial writes
 		io.Copy(saveFile, sentFile)
-	}()
+	sentFile.Close()
+	// we need to reset file pos so resizer starts at correct spot
+	saveFile.Seek(0, 0)
+	tnBytes, err := s.createThumbnail(saveFile)
+	saveFile.Close()
+	if err == nil {
+		tfn := fmt.Sprintf("%d_tn%s", timestamp, origExt)
+		newThread.ThumbnailLocation = fmt.Sprintf("/%s/%s/%s", s.Config.StaticDir, bn, tfn)
+		ioutil.WriteFile(filepath.Join(saveDir, tfn), tnBytes, 0600)
+	}
 
 	// TODO: inet only handles ipv4. argh, inet6 localhost coming in
 	// not sure if i should even bother with ip based user ids. might have to text
@@ -259,7 +270,9 @@ func (s *Server) addThreadHandler(w http.ResponseWriter, r *http.Request) {
 	// TODO: hardcoded proto atm :-(
 	url := fmt.Sprintf("http://%s/%s/%d", r.Host, bn, createdID)
 	http.Redirect(w, r, url, http.StatusSeeOther)
+	//}()
 }
+
 
 func (s *Server) addReplyHandler(w http.ResponseWriter, r *http.Request) {
 	v := mux.Vars(r)
@@ -315,14 +328,14 @@ func (s *Server) addReplyHandler(w http.ResponseWriter, r *http.Request) {
 
 	// TODO: inet only handles ipv4. argh, inet6 localhost coming in
 	// not sure if i should even bother with ip based user ids. might have to text
-	_, err = s.Db.CreatePost(newPost, "192.168.1.1") //r.RemoteAddr)
+	createdID, err := s.Db.CreatePost(newPost, "192.168.1.1") //r.RemoteAddr)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
 	// TODO: hardcoded proto atm :-(
-	url := fmt.Sprintf("http://%s/%s/%d", r.Host, bn, tid)
+	url := fmt.Sprintf("http://%s/%s/%d#%d", r.Host, bn, tid, createdID)
 	http.Redirect(w, r, url, http.StatusSeeOther)
 	//b, thread := s.tryGetBoardAndThread(w, r)
 	//if b == nil || thread == nil {

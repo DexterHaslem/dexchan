@@ -31,6 +31,7 @@ type TemplateHelper struct {
 	IsVideo       bool
 	HasAttachment bool
 }
+
 type Thread struct {
 	ID          int64     `json:"id"`
 	BoardID     int64     `json:"boardID"`
@@ -58,4 +59,12 @@ type Attachment struct {
 	Location          string `json:"attachmentLocation"`
 	ThumbnailLocation string `json:"attachmentTnLocation"`
 	Size              int64  `json:"attachmentSize"`
+}
+
+func (a *Attachment) SetThumbnail(tn string) {
+	a.ThumbnailLocation = tn
+}
+
+type ThumbnailSubject interface {
+	SetThumbnail(string)
 }
