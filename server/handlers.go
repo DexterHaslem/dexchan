@@ -97,12 +97,34 @@ func (s *Server) boardHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	for _, t := range tx {
+		parseThreadHelpers(t)
+	}
+
 	state := State{
 		Boards:  s.boards,
 		Board:   b,
 		Threads: tx,
 	}
 	t.ExecuteTemplate(w, "base", state)
+}
+
+// helpers for templates
+func parsePostHelpers(posts []*model.Post) {
+	for _, p := range posts {
+		p.HasAttachment = p.Location != "" && p.Size > 0
+		if p.HasAttachment {
+			ext := filepath.Ext(p.OriginalFilename)
+			p.IsVideo = ext == ".webm"
+		}
+	}
+}
+
+func parseThreadHelpers(t *model.Thread) {
+	// note: should always be true
+	t.HasAttachment = t.Location != "" && t.Size > 0
+	ext := filepath.Ext(t.OriginalFilename)
+	t.IsVideo = ext == ".webm"
 }
 
 func (s *Server) threadHandler(w http.ResponseWriter, r *http.Request) {
@@ -113,8 +135,10 @@ func (s *Server) threadHandler(w http.ResponseWriter, r *http.Request) {
 	if b == nil || thread == nil {
 		return
 	}
+	parseThreadHelpers(thread)
 
 	posts, _ := s.Db.GetPosts(thread.ID)
+	parsePostHelpers(posts)
 
 	state := State{
 		Boards: s.boards,
@@ -135,13 +159,10 @@ func (s *Server) replyHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	posts, _ := s.Db.GetPosts(thread.ID)
-
 	state := State{
 		Boards: s.boards,
 		Board:  b,
 		Thread: thread,
-		Posts:  posts,
 	}
 	t.ExecuteTemplate(w, "base", state)
 }
@@ -173,7 +194,6 @@ func (s *Server) addReplyHandler(w http.ResponseWriter, r *http.Request) {
 		if err != nil {
 			return
 		}
-
 
 		newPost.OriginalFilename = filepath.Base(fileHeader.Filename)
 		newPost.Size = fileHeader.Size

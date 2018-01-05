@@ -71,6 +71,9 @@
     margin: 10px;
 }
 
+.thread-contents {
+    margin: 10px;
+}
 .board-header {
     text-align: center;
 }
@@ -100,6 +103,12 @@ h1, h2, h3, h4, h5, h6 {
 
 .attachment-container {
     margin: 10px 0;
+    display: flex;
+    flex-direction: column;
+}
+
+.attachment-container > span {
+    text-align: center;
 }
 
 body {

@@ -7,18 +7,23 @@
 
 {{ $b := .Board }}
 <div class="thread-container">
-
-
-    <h4><a href="/{{$b.ShortCode}}/new">Create thread</a></h4>
-
+    <h3><a href="/{{$b.ShortCode}}/new">Create thread</a></h3>
 
 {{ range $t := .Threads }}
     <div class="thread-preview-container">
-        <img src="{{ $t.ThumbnailLocation }}">
+        <div>
+        {{if $t.IsVideo}}
+            <video controls muted loop preload="metadata">
+                <source src="{{$t.ThumbnailLocation}}" type="video/webm">
+            </video>
+        {{else}}
+            <img src="{{$t.ThumbnailLocation}}">
+        {{end}}
+        </div>
+
         <div class="thread-preview-info">
             <span>{{ $t.CreatedAt }} - <strong>{{ $t.Subject }}</strong></span>
             <span>{{ $t.Description }}</span>
-
             <div class="thread-preview-info-bottom">
                 <span>R: #</span>
                 <span>I: #</span>

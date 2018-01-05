@@ -27,6 +27,10 @@ type Board struct {
 	AttachmentTypes   string `json:"allowedAttachmentTypes"`
 }
 
+type TemplateHelper struct {
+	IsVideo       bool
+	HasAttachment bool
+}
 type Thread struct {
 	ID          int64     `json:"id"`
 	BoardID     int64     `json:"boardID"`
@@ -35,6 +39,7 @@ type Thread struct {
 	PostedByID  int64     `json:"postedByID"`
 	CreatedAt   time.Time `json:"createdAt"`
 	Attachment
+	TemplateHelper
 }
 
 type Post struct {
@@ -45,9 +50,7 @@ type Post struct {
 	IsHidden   bool      `json:"isHidden"`
 	PostedByID int64     `json:"postedByID"`
 	Attachment
-
-	// template helper
-	HasAttachment bool
+	TemplateHelper
 }
 
 type Attachment struct {

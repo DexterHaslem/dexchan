@@ -5,22 +5,35 @@
 {{ $b := .Board }}
 <h2 class="board-header">{{$b.ShortCode}} - {{$b.Name}}</h2>
 <h5 class="board-description">{{$b.Description}}</h5>
-
+<a name="top"></a>
 
 <div class="thread-preview-container">
-    <div class="flex-col">
-        <span><em>{{$t.OriginalFilename}}</em></span>
-        <img src="{{ $t.ThumbnailLocation }}">
+    <div>
+    {{if $t.IsVideo}}
+        <video controls muted loop preload="metadata">
+            <source src="{{$t.ThumbnailLocation}}" type="video/webm">
+        </video>
+    {{else}}
+        <img src="{{$t.ThumbnailLocation}}">
+    {{end}}
     </div>
 
     <div class="thread-preview-info">
-        <span>{{ $t.CreatedAt }} - {{ $t.Subject }}</span>
-        <span>{{ $t.Description }}</span>
-        <a href="/{{$b.ShortCode}}/{{$t.ID}}/reply">Reply</a>
+        <span>{{ $t.CreatedAt }}</span>
+        <span>Filename: <em>{{$t.OriginalFilename}}</em></span>
+        <span>Subject: <strong>{{ $t.Subject }}</strong></span>
+        <span class="thread-contents">{{ $t.Description }}</span>
+
+        <a href="/{{$b.ShortCode}}/{{$t.ID}}/reply">Add Reply</a>
+        <span><a href="#bottom">Go to bottom</a></span>
     </div>
+
+
 </div>
-<span>Replies: #</span>
-<span>Attachments: #</span>
+<div>
+    <span>Replies: #</span>
+    <span>Attachments: #</span>
+</div>
 
 <div class="post-container">
 {{range .Posts}}
@@ -31,12 +44,21 @@
 
     {{if .HasAttachment}}
         <div class="attachment-container">
+            <span>Filename: <em>{{$t.OriginalFilename}}</em></span>
+        {{if .IsVideo}}
+            <video controls muted loop preload="metadata">
+                <source src="{{.ThumbnailLocation}}" type="video/webm">
+            </video>
+        {{else}}
             <img src="{{.ThumbnailLocation}}">
+        {{end}}
+
         </div>
     {{end}}
     </div>
-
 {{end}}
 </div>
-
+<a href="#top">Go to top</a>
+<a href="/{{$b.ShortCode}}/{{$t.ID}}/reply">Add Reply</a>
+<a name="bottom"></a>
 {{end}}

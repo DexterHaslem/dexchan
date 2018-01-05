@@ -156,7 +156,6 @@ func (d *db) GetPosts(threadID int64) ([]*model.Post, error) {
 		if err != nil {
 			return ret, err
 		}
-		p.HasAttachment = p.Location != "" && p.Size > 0
 		ret = append(ret, p)
 	}
 
