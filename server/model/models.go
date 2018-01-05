@@ -45,6 +45,9 @@ type Post struct {
 	IsHidden   bool      `json:"isHidden"`
 	PostedByID int64     `json:"postedByID"`
 	Attachment
+
+	// template helper
+	HasAttachment bool
 }
 
 type Attachment struct {

@@ -174,10 +174,13 @@ func (s *Server) addReplyHandler(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
+
 		newPost.OriginalFilename = filepath.Base(fileHeader.Filename)
 		newPost.Size = fileHeader.Size
+		// OUCH: cant use filename. its not safe cross platform. windows server will create
+		// \static\bn\fn.ext which wont work as an url of course. build manually :-(
 		// !! CDN HOOK
-		newPost.Location = filepath.Join("/", saveFn)
+		newPost.Location = fmt.Sprintf("/%s/%s/%s", s.Config.StaticDir, bn, fn)
 		// TODO: thumbnail creation
 		newPost.ThumbnailLocation = newPost.Location
 

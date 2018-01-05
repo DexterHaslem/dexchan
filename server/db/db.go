@@ -67,7 +67,12 @@ func (d *db) CreatePost(p *model.Post, ip string) (int64, error) {
 
 	var createdID int64
 
-	err = d.openedDB.QueryRow("INSERT INTO post (thread_id, content, posted_at, posted_by_id, hidden, attachment_orig_name, attachment_tn_loc, attachment_loc, attachment_size) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING id;",
+	err = d.openedDB.QueryRow(
+		`INSERT INTO post
+				(thread_id, content, posted_at, posted_by_id, hidden,
+				attachment_orig_name, attachment_tn_loc, attachment_loc,
+				attachment_size)
+			  VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING id;`,
 		p.ThreadID, p.Content, time.Now(), postedByID, false,
 		p.OriginalFilename, p.ThumbnailLocation, p.Location, p.Size).Scan(&createdID)
 
@@ -80,7 +85,11 @@ func (d *db) CreateThread(t *model.Thread, ip string) (int64, error) {
 		return 0, err
 	}
 	var createdID int64
-	err = d.openedDB.QueryRow("INSERT INTO thread (board_id, subject, description, created_at, created_by_id, hidden, attachment_orig_name, attachment_tn_loc, attachment_loc, attachment_size) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10) RETURNING id;",
+	err = d.openedDB.QueryRow(
+		`INSERT INTO thread
+				(board_id, subject, description, created_at, created_by_id, hidden,
+				attachment_orig_name, attachment_tn_loc, attachment_loc, attachment_size)
+			VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10) RETURNING id;`,
 		t.BoardID, t.Subject, t.Description, time.Now(), postedByID, false,
 		t.OriginalFilename, t.ThumbnailLocation, t.Location, t.Size).Scan(&createdID)
 	return createdID, err
@@ -88,7 +97,10 @@ func (d *db) CreateThread(t *model.Thread, ip string) (int64, error) {
 
 func (d *db) GetThread(threadID int64) (*model.Thread, error) {
 	t := &model.Thread{}
-	err := d.openedDB.QueryRow("SELECT id,created_at,created_by_id,description,subject,attachment_loc,attachment_orig_name,attachment_tn_loc, attachment_size FROM thread t WHERE t.id = $1", threadID).
+	err := d.openedDB.QueryRow(
+		`SELECT id,created_at,created_by_id,description,subject,attachment_loc,
+					attachment_orig_name,attachment_tn_loc, attachment_size
+				FROM thread t WHERE t.id = $1`, threadID).
 		Scan(&t.ID, &t.CreatedAt, &t.PostedByID, &t.Description, &t.Subject, &t.Location,
 		&t.OriginalFilename, &t.ThumbnailLocation, &t.Size)
 	if err != nil {
@@ -99,7 +111,11 @@ func (d *db) GetThread(threadID int64) (*model.Thread, error) {
 }
 
 func (d *db) GetThreads(boardID int64) ([]*model.Thread, error) {
-	q, err := d.openedDB.Query("SELECT id,created_at, created_by_id,description,subject,attachment_loc,attachment_orig_name,attachment_tn_loc, attachment_size FROM thread t WHERE t.board_id = $1 ORDER BY t.created_at DESC", boardID)
+	q, err := d.openedDB.Query(
+		`SELECT id,created_at, created_by_id,description,subject,attachment_loc,
+					attachment_orig_name,attachment_tn_loc, attachment_size
+				FROM thread t WHERE t.board_id = $1 ORDER BY t.created_at DESC`, boardID)
+
 	if err != nil {
 		return nil, err
 	}
@@ -122,7 +138,10 @@ func (d *db) GetThreads(boardID int64) ([]*model.Thread, error) {
 func (d *db) GetPosts(threadID int64) ([]*model.Post, error) {
 	// beware, if we scan we need to provide a value for null attachments. kinda defeats the point of null, hmm
 	// removed nullable in db instead :-(
-	q, err := d.openedDB.Query("SELECT id, posted_at, posted_by_id, content, attachment_size, attachment_tn_loc, attachment_loc, attachment_orig_name FROM post p WHERE p.thread_id = $1", threadID)
+	q, err := d.openedDB.Query(
+		`SELECT id, posted_at, posted_by_id, content, attachment_size,
+ 						attachment_tn_loc, attachment_loc, attachment_orig_name
+ 				FROM post p WHERE p.thread_id = $1`, threadID)
 	if err != nil {
 		return nil, err
 	}
@@ -137,6 +156,7 @@ func (d *db) GetPosts(threadID int64) ([]*model.Post, error) {
 		if err != nil {
 			return ret, err
 		}
+		p.HasAttachment = p.Location != "" && p.Size > 0
 		ret = append(ret, p)
 	}
 

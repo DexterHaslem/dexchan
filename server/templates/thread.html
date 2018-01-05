@@ -25,8 +25,14 @@
 <div class="post-container">
 {{range .Posts}}
     <div class="post-item">
-        <span>{{ .PostedAt }}</span>
+        <span><em>{{ .PostedAt }}</em></span>
         <span>{{ .Content }}</span>
+
+    {{if .HasAttachment}}
+        <div class="attachment-container">
+            <img src="{{.ThumbnailLocation}}">
+        </div>
+    {{end}}
     </div>
 
 {{end}}
