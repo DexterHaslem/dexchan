@@ -9,6 +9,10 @@ import (
 	"github.com/gorilla/mux"
 	"fmt"
 	"strconv"
+	"io"
+	"os"
+	"time"
+	_ "html"
 )
 
 // TEMP: always parse template, makes editing easier during development
@@ -63,6 +67,25 @@ func (s *Server) tryGetBoard(w http.ResponseWriter, r *http.Request) *model.Boar
 	return found
 }
 
+func (s *Server) tryGetBoardAndThread(w http.ResponseWriter, r *http.Request) (*model.Board, *model.Thread) {
+	b := s.tryGetBoard(w, r)
+	if b == nil {
+		return nil, nil
+	}
+
+	v := mux.Vars(r)
+	tns := v["thread"]
+	// matched by regex, always good
+	tn, _ := strconv.ParseInt(tns, 10, 64)
+	thread, err := s.Db.GetThread(tn)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return nil, nil
+	}
+
+	return b, thread
+}
+
 func (s *Server) boardHandler(w http.ResponseWriter, r *http.Request) {
 	fp := filepath.Join("templates", "board.html")
 	t := s.getCachedTemplate(fp)
@@ -86,19 +109,33 @@ func (s *Server) threadHandler(w http.ResponseWriter, r *http.Request) {
 	fp := filepath.Join("templates", "thread.html")
 	t := s.getCachedTemplate(fp)
 
-	b := s.tryGetBoard(w, r)
-
-	v := mux.Vars(r)
-	tns := v["thread"]
-	// matched by regex, always good
-	tn, _ := strconv.ParseInt(tns, 10, 64)
-	thread, err := s.Db.GetThread(tn)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+	b, thread := s.tryGetBoardAndThread(w, r)
+	if b == nil || thread == nil {
 		return
 	}
 
-	posts, _ := s.Db.GetPosts(tn)
+	posts, _ := s.Db.GetPosts(thread.ID)
+
+	state := State{
+		Boards: s.boards,
+		Board:  b,
+		Thread: thread,
+		Posts:  posts,
+	}
+
+	t.ExecuteTemplate(w, "base", state)
+}
+
+func (s *Server) replyHandler(w http.ResponseWriter, r *http.Request) {
+	fp := filepath.Join("templates", "reply.html")
+	t := s.getCachedTemplate(fp)
+
+	b, thread := s.tryGetBoardAndThread(w, r)
+	if b == nil || thread == nil {
+		return
+	}
+
+	posts, _ := s.Db.GetPosts(thread.ID)
 
 	state := State{
 		Boards: s.boards,
@@ -107,4 +144,52 @@ func (s *Server) threadHandler(w http.ResponseWriter, r *http.Request) {
 		Posts:  posts,
 	}
 	t.ExecuteTemplate(w, "base", state)
+}
+
+func (s *Server) addReplyHandler(w http.ResponseWriter, r *http.Request) {
+	// todo: lookup board max
+	r.Body = http.MaxBytesReader(w, r.Body, 1024*1024*8)
+
+	sentFile, fileHeader, err := r.FormFile("f")
+	if err != nil {
+		http.Error(w, "Invalid method", http.StatusBadRequest)
+		return
+	}
+
+	v := mux.Vars(r)
+	bn := v["board"]
+	saveDir := filepath.Join(s.Config.StaticDir, bn)
+	if err := os.MkdirAll(saveDir, 0700); err != nil {
+		return
+	}
+
+	// ensure dir for board content exists
+	// security: we could get in a bogus header with traversal exploitation so chop to base
+	// dont use original filename, timestamp fn := filepath.Base(fileHeader.Filename)
+	origExt := filepath.Ext(fileHeader.Filename)
+	fn := fmt.Sprintf("%d%s", time.Now().Unix(), origExt)
+	saveFn := filepath.Join(saveDir, fn)
+	saveFile, err := os.Create(saveFn)
+	if err != nil {
+		return
+	}
+
+	// start saving it to disk. this is dumb atm
+	go func() {
+		defer r.Body.Close()
+		defer sentFile.Close()
+		defer saveFile.Close()
+		// TODO: partial writes
+		io.Copy(saveFile, sentFile)
+	}()
+
+	//postContent := r.FormValue("post")
+
+	//newPost := &model.Post{}
+	//newPost.Content = html.EscapeString(postContent)
+	//newPost.
+	//b, thread := s.tryGetBoardAndThread(w, r)
+	//if b == nil || thread == nil {
+	//	return
+	//}
 }

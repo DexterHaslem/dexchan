@@ -1,0 +1,20 @@
+{{define "title"}}{{.Board.ShortCode}} - {{.Thread.Subject}}{{end}}
+
+{{define "body"}}
+{{ $t := .Thread }}
+{{ $b := .Board }}
+<h2 class="board-header">{{$b.ShortCode}} - {{$b.Name}}</h2>
+<h5 class="board-description">{{$b.Description}}</h5>
+<div>
+    <h4>Reply</h4>
+    <span>Replying to {{ $t.CreatedAt }} - <strong>{{ $t.Subject }}</strong></span>
+
+    <form action="/{{$b.ShortCode}}/{{$t.ID}}/newreply" method="post"
+          enctype="multipart/form-data" class="post-form">
+        <textarea name="post" placeholder="enter post"></textarea>
+        <input type="file" name="f" accept="image/*,video/*" placeholder="select file">
+        <input type="submit" value="Post">
+    </form>
+</div>
+{{end}}
+
