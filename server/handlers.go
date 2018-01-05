@@ -184,7 +184,81 @@ func (s *Server) replyHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func (s *Server) addThreadHandler(w http.ResponseWriter, r *http.Request) {
+	v := mux.Vars(r)
+	bn := v["board"]
 
+	b := s.tryGetBoard(w, r)
+
+	sub := r.FormValue("subject")
+	desc := r.FormValue("description")
+	if sub == "" || desc == "" {
+		http.Error(w, "subject and description required to create a thread", http.StatusBadRequest)
+		return
+	}
+
+	// todo: lookup board max
+	r.Body = http.MaxBytesReader(w, r.Body, 1024*1024*8)
+	sentFile, fileHeader, err := r.FormFile("f")
+
+	// attachment is always required for new post
+	if err != nil {
+		http.Error(w, "a file is required to create a thread", http.StatusBadRequest)
+		return
+	}
+
+	newThread := &model.Thread{
+		Subject:     sub,
+		Description: desc,
+		CreatedAt:   time.Now(),
+		BoardID:     b.ID,
+	}
+
+	// todo: abstract
+	saveDir := filepath.Join(s.Config.StaticDir, bn)
+	if err := os.MkdirAll(saveDir, 0700); err != nil {
+		return
+	}
+
+	// ensure dir for board content exists
+	// security: we could get in a bogus header with traversal exploitation so chop to base
+	// dont use original filename, timestamp fn := filepath.Base(fileHeader.Filename)
+	origExt := filepath.Ext(fileHeader.Filename)
+	fn := fmt.Sprintf("%d%s", time.Now().Unix(), origExt)
+	saveFn := filepath.Join(saveDir, fn)
+	saveFile, err := os.Create(saveFn)
+	if err != nil {
+		return
+	}
+
+	newThread.OriginalFilename = filepath.Base(fileHeader.Filename)
+	newThread.Size = fileHeader.Size
+	// OUCH: cant use filename. its not safe cross platform. windows server will create
+	// \static\bn\fn.ext which wont work as an url of course. build manually :-(
+	// !! CDN HOOK
+	newThread.Location = fmt.Sprintf("/%s/%s/%s", s.Config.StaticDir, bn, fn)
+	// TODO: thumbnail creation
+	newThread.ThumbnailLocation = newThread.Location
+
+	// start saving it to disk. this is dumb atm
+	go func() {
+		defer r.Body.Close()
+		defer sentFile.Close()
+		defer saveFile.Close()
+		// TODO: partial writes
+		io.Copy(saveFile, sentFile)
+	}()
+
+	// TODO: inet only handles ipv4. argh, inet6 localhost coming in
+	// not sure if i should even bother with ip based user ids. might have to text
+	createdID, err := s.Db.CreateThread(newThread, "192.168.1.1") //r.RemoteAddr)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	// TODO: hardcoded proto atm :-(
+	url := fmt.Sprintf("http://%s/%s/%d", r.Host, bn, createdID)
+	http.Redirect(w, r, url, http.StatusSeeOther)
 }
 
 func (s *Server) addReplyHandler(w http.ResponseWriter, r *http.Request) {
