@@ -247,19 +247,20 @@ func (s *Server) addThreadHandler(w http.ResponseWriter, r *http.Request) {
 	// TODO: partial writes
 	io.Copy(saveFile, sentFile)
 	sentFile.Close()
-	// we need to reset file pos so resizer starts at correct spot
-	saveFile.Seek(0, 0)
-	tnBytes, err := s.createThumbnail(saveFile)
-	saveFile.Close()
-	if err == nil {
-		tfn := fmt.Sprintf("%d_tn%s", timestamp, origExt)
-		newThread.ThumbnailLocation = fmt.Sprintf("/%s/%s/%s", s.Config.StaticDir, bn, tfn)
-		ioutil.WriteFile(filepath.Join(saveDir, tfn), tnBytes, 0600)
+	if origExt != ".webm" {
+		// we need to reset file pos so resizer starts at correct spot
+		saveFile.Seek(0, 0)
+		tnBytes, err := s.createThumbnail(saveFile)
+		saveFile.Close()
+		if err == nil {
+			tfn := fmt.Sprintf("%d_tn%s", timestamp, origExt)
+			newThread.ThumbnailLocation = fmt.Sprintf("/%s/%s/%s", s.Config.StaticDir, bn, tfn)
+			ioutil.WriteFile(filepath.Join(saveDir, tfn), tnBytes, 0600)
+		}
+	} else {
+		newThread.ThumbnailLocation = newThread.Location
 	}
-
-	// TODO: inet only handles ipv4. argh, inet6 localhost coming in
-	// not sure if i should even bother with ip based user ids. might have to text
-	createdID, err := s.Db.CreateThread(newThread, "192.168.1.1") //r.RemoteAddr)
+	createdID, err := s.Db.CreateThread(newThread, r.RemoteAddr)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -322,9 +323,7 @@ func (s *Server) addReplyHandler(w http.ResponseWriter, r *http.Request) {
 	newPost.ThreadID = tid
 	newPost.PostedAt = time.Now()
 
-	// TODO: inet only handles ipv4. argh, inet6 localhost coming in
-	// not sure if i should even bother with ip based user ids. might have to text
-	createdID, err := s.Db.CreatePost(newPost, "192.168.1.1") //r.RemoteAddr)
+	createdID, err := s.Db.CreatePost(newPost, r.RemoteAddr)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return

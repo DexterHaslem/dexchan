@@ -23,6 +23,10 @@ const (
 func (s *Server) createThumbnail(f *os.File) ([]byte, error) {
 	ext := filepath.Ext(f.Name())
 
+	if ext == ".webm" {
+		return nil, nil
+	}
+
 	// we have to provide a decoded image to resizer. woopie
 	var img image.Image
 	var err error

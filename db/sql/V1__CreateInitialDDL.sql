@@ -10,7 +10,7 @@ CREATE TABLE board (
 
 CREATE TABLE auser (
   id         SERIAL PRIMARY KEY,
-  ip         INET      NOT NULL UNIQUE,
+  ip         TEXT      NOT NULL UNIQUE,
   first_seen TIMESTAMP NOT NULL,
   last_seen  TIMESTAMP NOT NULL
 );
@@ -56,10 +56,10 @@ CREATE TABLE post (
   hidden               BOOLEAN                    NOT NULL,
   -- had to end up making these not null to not be a pain in the ass to scan
   -- but blank is valid for post. need to add a check to thread to disallow blank
-  attachment_orig_name TEXT NOT NULL,
-  attachment_tn_loc    TEXT NOT NULL,
-  attachment_loc       TEXT NOT NULL,
-  attachment_size      INT  NOT NULL
+  attachment_orig_name TEXT                       NOT NULL,
+  attachment_tn_loc    TEXT                       NOT NULL,
+  attachment_loc       TEXT                       NOT NULL,
+  attachment_size      INT                        NOT NULL
 );
 
 

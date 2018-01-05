@@ -1,6 +1,6 @@
 DO $$
 DECLARE
-  boards TEXT [] := ARRAY ['a', 'b', 'c', 'd', 'e', 'f', 'r', 'm'];
+  boards TEXT [] := ARRAY ['a', 'b', 'c', 'd'];
   b      TEXT;
 BEGIN
   FOREACH b IN ARRAY boards LOOP
@@ -12,7 +12,7 @@ BEGIN
         concat(b, ' board' :: TEXT),
         b,
         'board description here',
-        TRUE,
+        FALSE,
         (SELECT 1024 * 5),
         'webm,png,jpg'
       WHERE NOT exists(SELECT 1
@@ -26,10 +26,10 @@ $$;
 INSERT INTO board
 (name, shortname, description, nsfw, max_attachment_size, allowed_attachment_exts)
   SELECT
-    'test',
-    't',
-    'for testing',
-    FALSE,
+    'nsfw',
+    'n',
+    'anything NSFW goes here',
+    TRUE,
     (SELECT 1024 * 6),
     'webm,png,jpg'
   WHERE NOT exists(SELECT 1

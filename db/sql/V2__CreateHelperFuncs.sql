@@ -7,7 +7,7 @@ BEGIN
 
   SELECT id
   FROM auser a
-  WHERE a.ip = $1 :: INET
+  WHERE a.ip = $1
   INTO existing_id;
 
   IF existing_id IS NOT NULL
@@ -18,7 +18,7 @@ BEGIN
   ELSE
     WITH newr AS (
       INSERT INTO auser (ip, first_seen, last_seen) VALUES (
-        $1 :: INET,
+        $1,
         now(),
         now()
       )
