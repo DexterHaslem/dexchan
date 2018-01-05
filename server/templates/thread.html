@@ -25,7 +25,8 @@
 <div class="post-container">
 {{range .Posts}}
     <div class="post-item">
-        <span><em>{{ .PostedAt }}</em></span>
+        <span><em><a name="{{.ID}}">{{.ID}}</a> - {{ .PostedAt }} (<a href="#{{.ID}}">Link</a>)</em> </span>
+        <!-- todo: content scanner for refs -->
         <span>{{ .Content }}</span>
 
     {{if .HasAttachment}}
