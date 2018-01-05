@@ -56,6 +56,7 @@
     flex-direction: row;
 
     margin: 15px;
+    padding: 5px;
     border-top: 1px solid dodgerblue;
     border-collapse: collapse;
 }
