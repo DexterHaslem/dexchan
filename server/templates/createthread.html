@@ -1,0 +1,46 @@
+{{define "title"}}{{.Board.ShortCode}} - new thread{{end}}
+
+{{define "body"}}
+{{ $b := .Board }}
+<div>
+    <h2 class="board-header">{{$b.ShortCode}} - {{$b.Name}}</h2>
+    <h5 class="board-description">{{$b.Description}}</h5>
+    <div class="create-new-thread-container">
+        <h2>Create new thread</h2>
+        <span>Please read the board rules at <a href="#">TODO</a></span>
+
+        <form action="/{{$b.ShortCode}}/newthread" method="post"
+              enctype="multipart/form-data" class="post-form"
+              style="width:100%;">
+            <input type="text" name="subject" placeholder="thread subject">
+            <textarea id="posttext" name="post" placeholder="enter thread description."
+                      rows="10" cols="10"></textarea>
+
+
+            <span>You must select an image or video to create a thread</span>
+            <input id="fileinput" type="file" name="f" accept=".webm,.png,.jpg,.jpeg" placeholder="select file">
+            <input type="submit" value="Post">
+        </form>
+        <span>Tip: you can drag a file into the thread description</span>
+    </div>
+    <script>
+        'use strict';
+        var pt = document.getElementById('posttext');
+        var fi = document.getElementById('fileinput');
+
+        ['dragenter', 'dragstart', 'dragend', 'dragleave', 'dragover', 'drag', 'drop'].forEach(en => {
+            pt.addEventListener(en, function (e) {
+                e.stopPropagation();
+                e.preventDefault();
+            });
+        });
+
+        pt.addEventListener('drop', function (e) {
+            if (e.dataTransfer.files.length < 2) {
+                fi.files = e.dataTransfer.files;
+            }
+        });
+    </script>
+</div>
+{{end}}
+

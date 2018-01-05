@@ -34,13 +34,12 @@ func (s *Server) Start() {
 
 	router.HandleFunc("/", s.homeHandler).Methods("GET")
 	router.HandleFunc("/{board:[a-z]+}", s.boardHandler).Methods("GET")
+	router.HandleFunc("/{board:[a-z]+}/createthread", s.createThreadHandler).Methods("GET")
 	router.HandleFunc("/{board:[a-z]+}/{thread:[0-9]+}", s.threadHandler).Methods("GET")
 	router.HandleFunc("/{board:[a-z]+}/{thread:[0-9]+}/reply", s.replyHandler).Methods("GET")
 
+	router.HandleFunc("/{board:[a-z]+}/newthread", s.addThreadHandler).Methods("POST")
 	router.HandleFunc("/{board:[a-z]+}/{thread:[0-9]+}/newreply", s.addReplyHandler).Methods("POST")
-	//
-	//router.HandleFunc("/{board:[a-z]+}/thread", s.createThread).Methods("POST")
-	//router.HandleFunc("/{board:[a-z]+}/{thread:[0-9]+}/post", s.createPost).Methods("POST")
 
 	http.Handle("/", router)
 

@@ -150,6 +150,22 @@ func (s *Server) threadHandler(w http.ResponseWriter, r *http.Request) {
 	t.ExecuteTemplate(w, "base", state)
 }
 
+func (s *Server) createThreadHandler(w http.ResponseWriter, r *http.Request) {
+	fp := filepath.Join("templates", "createthread.html")
+	t := s.getCachedTemplate(fp)
+
+	b := s.tryGetBoard(w, r)
+	if b == nil {
+		return
+	}
+
+	state := State{
+		Boards: s.boards,
+		Board:  b,
+	}
+	t.ExecuteTemplate(w, "base", state)
+}
+
 func (s *Server) replyHandler(w http.ResponseWriter, r *http.Request) {
 	fp := filepath.Join("templates", "reply.html")
 	t := s.getCachedTemplate(fp)
@@ -165,6 +181,10 @@ func (s *Server) replyHandler(w http.ResponseWriter, r *http.Request) {
 		Thread: thread,
 	}
 	t.ExecuteTemplate(w, "base", state)
+}
+
+func (s *Server) addThreadHandler(w http.ResponseWriter, r *http.Request) {
+
 }
 
 func (s *Server) addReplyHandler(w http.ResponseWriter, r *http.Request) {

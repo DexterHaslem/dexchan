@@ -114,3 +114,11 @@ h1, h2, h3, h4, h5, h6 {
 body {
     background-color: rgba(243, 243, 243, 0.98);
 }
+
+.create-new-thread-container {
+    display: flex;
+    width: 75%;
+    flex-direction: column;
+    margin: 1%;
+    align-items: stretch;
+}
