@@ -1,0 +1,9 @@
+{
+  "staticDir": "static",
+  "dbName": "",
+  "dbHost": "",
+  "dbPort": 5432,
+  "dbUsername": "",
+  "dbPassword": "",
+  "Port": 8080
+}
