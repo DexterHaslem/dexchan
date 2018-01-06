@@ -56,13 +56,14 @@ func (s *Server) Start() {
 	// get boards right away
 	b, err := s.Db.GetBoards()
 	if err != nil {
-		log.Fatal("failed to initialize")
+		log.Fatalf("failed to initialize: %s", err)
 	}
 	s.boards = b
 	s.boardsByShortcode = make(map[string]*model.Board)
-	// build map by shortcode right away since we use this for all client rquests
+	// build map by shortcode right away since we use this for all client requests
 	for _, b := range s.boards {
 		s.boardsByShortcode[b.ShortCode] = b
 	}
-	http.ListenAndServe("0.0.0.0:"+strconv.Itoa(s.Config.Port), nil)
+	err = http.ListenAndServe("0.0.0.0:"+strconv.Itoa(s.Config.Port), nil)
+	log.Printf("done: exit err=%s\n", err)
 }
