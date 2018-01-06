@@ -64,5 +64,5 @@ func (s *Server) Start() {
 	for _, b := range s.boards {
 		s.boardsByShortcode[b.ShortCode] = b
 	}
-	http.ListenAndServe(":"+strconv.Itoa(s.Config.Port), nil)
+	http.ListenAndServe("0.0.0.0:"+strconv.Itoa(s.Config.Port), nil)
 }
