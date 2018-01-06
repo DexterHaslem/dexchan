@@ -7,9 +7,11 @@ import (
 	"dexchan/server/db"
 )
 
-func main() {
-	s := server.Server{
-		Config: &cfg.C{
+func loadCfg() *cfg.C {
+	//  todo: flag for passing in config
+	c, err := cfg.From("dexchan.json")
+	if err != nil {
+		return &cfg.C{
 			StaticDir:  "static",
 			Port:       8080,
 			DbUsername: "dexchan",
@@ -17,8 +19,14 @@ func main() {
 			DbHost:     "localhost",
 			DbName:     "dexchan",
 			DbPort:     5432,
-		},
+		}
 	}
+	return c
+}
+
+func main() {
+	c := loadCfg()
+	s := server.Server{Config: c}
 
 	d, err := db.Open(s.Config)
 	if err != nil {
