@@ -9,6 +9,7 @@ import (
 	"dexchan/server/model"
 	"log"
 	"html/template"
+	"os"
 )
 
 type Server struct {
@@ -27,6 +28,15 @@ func (s *Server) staticRoot(w http.ResponseWriter, r *http.Request) {
 
 func (s *Server) Start() {
 	s.templatesCache = map[string]*template.Template{}
+
+	_, err := os.Stat(s.Config.StaticDir)
+	if err == os.ErrNotExist {
+		err := os.MkdirAll(s.Config.StaticDir, 0700)
+		if err != nil {
+			log.Fatalf("failed to make static dir %s", s.Config.StaticDir)
+		}
+	}
+
 	fs := http.FileServer(http.Dir(s.Config.StaticDir))
 	http.Handle("/static/", http.StripPrefix("/static", fs))
 
