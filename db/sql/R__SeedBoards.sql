@@ -14,7 +14,7 @@ BEGIN
         'board description here',
         FALSE,
         (SELECT 1024 * 5),
-        'webm,png,jpg'
+        '.webm,.png,.jpg'
       WHERE NOT exists(SELECT 1
                        FROM board
                        WHERE shortname = b);
@@ -31,7 +31,7 @@ INSERT INTO board
     'anything NSFW goes here',
     TRUE,
     (SELECT 1024 * 6),
-    'webm,png,jpg'
+    '.webm,.png,.jpg'
   WHERE NOT exists(SELECT 1
                    FROM board
                    WHERE shortname = 't');
