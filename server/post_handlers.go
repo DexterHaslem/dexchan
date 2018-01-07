@@ -118,7 +118,6 @@ func (s *Server) handleAttachment(w http.ResponseWriter, r *http.Request, a mode
 		// we need to reset file pos so resizer starts at correct spot
 		saveFile.Seek(0, 0)
 		tnBytes, err := createThumbnail(saveFile)
-		saveFile.Close()
 		if err == nil {
 			a.SetThumbnail(s.createLocationLink(bn, ext, timestamp, true))
 			ioutil.WriteFile(filepath.Join(saveDir, a.GetThumbnail()), tnBytes, 0600)
