@@ -74,7 +74,7 @@
 .thread-preview-info {
     display: flex;
     flex-direction: column;
-    margin: 10px;
+    margin: 5px;
 }
 
 .thread-contents {
@@ -128,4 +128,13 @@ body {
     flex-direction: column;
     margin: 1%;
     align-items: stretch;
+}
+
+.button {
+    color: white;
+    background: darkblue;
+    padding: 4px;
+    margin: 6px;
+    border-radius: 2px;
+    text-decoration: none;
 }

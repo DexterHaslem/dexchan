@@ -3,7 +3,7 @@
 {{define "body"}}
 {{ $b := .Board }}
 <div>
-    <h2 class="board-header">{{$b.ShortCode}} - {{$b.Name}}</h2>
+    <h2 class="board-header"><a href="/{{.Board.ShortCode}}">{{.Board.ShortCode}} - {{.Board.Name}}</a></h2>
     <h5 class="board-description">{{$b.Description}}</h5>
     <div class="create-new-thread-container">
         <h2>Create new thread</h2>

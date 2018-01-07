@@ -1,13 +1,16 @@
 {{define "title"}}{{.Board.ShortCode}} - {{.Board.Name}}{{end}}
 
 {{define "body"}}
-<h2 class="board-header">{{.Board.ShortCode}} - {{.Board.Name}}</h2>
+<h2 class="board-header"><a href="/{{.Board.ShortCode}}">{{.Board.ShortCode}} - {{.Board.Name}}</a></h2>
 <h5 class="board-description">{{.Board.Description}}</h5>
+{{ if .Board.IsNotWorksafe}}
+
+{{end}}
 
 
 {{ $b := .Board }}
 <div class="thread-container">
-    <h3><a href="/{{$b.ShortCode}}/createthread">Create thread</a></h3>
+    <h3><a class="button" href="/{{$b.ShortCode}}/createthread">Create thread</a></h3>
 
 {{ range $t := .Threads }}
     <div class="thread-preview-container">
@@ -27,7 +30,7 @@
             <div class="thread-preview-info-bottom">
                 <span>R: #</span>
                 <span>I: #</span>
-                <a href="/{{$b.ShortCode}}/{{$t.ID}}">Reply/view</a>
+                <a class="button" href="/{{$b.ShortCode}}/{{$t.ID}}">Reply/view</a>
             </div>
         </div>
     </div>

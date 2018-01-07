@@ -3,7 +3,7 @@
 {{define "body"}}
 {{ $t := .Thread }}
 {{ $b := .Board }}
-<h2 class="board-header">{{$b.ShortCode}} - {{$b.Name}}</h2>
+<h2 class="board-header"><a href="/{{.Board.ShortCode}}">{{.Board.ShortCode}} - {{.Board.Name}}</a></h2>
 <h5 class="board-description">{{$b.Description}}</h5>
 <a name="top"></a>
 
@@ -24,9 +24,10 @@
         <span>Subject: <strong>{{ $t.Subject }}</strong></span>
         <span class="thread-contents">{{ $t.Description }}</span>
 
-        <a href="/{{$b.ShortCode}}/{{$t.ID}}/reply">Add Reply</a>
-        <span><a href="#bottom">Go to bottom</a></span>
+        <span style="margin:10px;"><a class="button" href="/{{$b.ShortCode}}/{{$t.ID}}/reply">Add Reply</a></span>
+        <span style="margin:10px;"><a class="button" href="#bottom">Go to bottom</a></span>
     </div>
+
 </div>
 <div>
     <span>Replies: #</span>
@@ -56,7 +57,7 @@
     </div>
 {{end}}
 </div>
-<a href="#top">Go to top</a>
-<a href="/{{$b.ShortCode}}/{{$t.ID}}/reply">Add Reply</a>
+<a class="button" href="#top">Go to top</a>
+<a class="button" href="/{{$b.ShortCode}}/{{$t.ID}}/reply">Add Reply</a>
 <a name="bottom"></a>
 {{end}}

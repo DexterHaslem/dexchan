@@ -11,9 +11,11 @@
 <div class="top-board-list">
     <span>[</span>
 {{ range .Boards }}
-    <a href="/{{.ShortCode}}">/{{.ShortCode}}</a>
+    <a href="/{{.ShortCode}}">/{{.ShortCode}} {{if .IsNotWorksafe}}(NSFW){{end}}</a>
 {{ end}}
     <span>]</span>
+
+    <a href="/">HOME</a>
 </div>
 <!-- dont forget to pass our data object down -->
 {{template "body" .}}
