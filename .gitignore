@@ -12,6 +12,7 @@ dexchan_prod.json
 *.jpg
 *.png
 *.jpeg
+*.webm
 
 # Runtime data
 pids
