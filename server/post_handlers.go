@@ -56,7 +56,7 @@ func createAttachmentName(origFileName, saveDir string) (int64, string, string) 
 
 func (s *Server) createLocationLink(bn, ext string, timestamp int64, isThumbnail bool) string {
 	// cant use filepath.Join here, on windows it will use wrong slashes
-	base := fmt.Sprintf("/%s/%s", s.Config.StaticDir, bn)
+	base := fmt.Sprintf("/%s/%s/", s.Config.StaticDir, bn)
 	fmtstring := ""
 	if isThumbnail {
 		fmtstring = "%s%d_tn%s"
