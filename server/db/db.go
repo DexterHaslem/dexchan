@@ -18,7 +18,7 @@ type D interface {
 	GetThreads(boardID int64) ([]*model.Thread, error)
 	GetThread(threadID int64) (*model.Thread, error)
 	GetPosts(threadID int64) ([]*model.Post, error)
-	AddActionLog(ip string, action string)
+	AddActionLog(ip string, action string) error
 	Close() error
 }
 
