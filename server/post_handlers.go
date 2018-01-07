@@ -119,8 +119,12 @@ func (s *Server) handleAttachment(w http.ResponseWriter, r *http.Request, a mode
 		saveFile.Seek(0, 0)
 		tnBytes, err := createThumbnail(saveFile)
 		if err == nil {
+			// this stinks, tn location will be url, not filepath so we cant use it
+			// if the server is running windows, so try to use massage. this trick
+			// will rebase to our current dir and flip the path to whatever host OS is
 			a.SetThumbnail(s.createLocationLink(bn, ext, timestamp, true))
-			ioutil.WriteFile(filepath.Join(saveDir, a.GetThumbnail()), tnBytes, 0600)
+			tnFile := filepath.Clean("." + a.GetThumbnail())
+			ioutil.WriteFile(tnFile, tnBytes, 0600)
 		} else {
 			log.Printf("Warning: failed to generate a thumbnail: %s\n", err)
 		}

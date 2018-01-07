@@ -49,10 +49,10 @@ func createThumbnail(f *os.File) ([]byte, error) {
 
 	bb := &bytes.Buffer{}
 	if isJpeg {
-		jpeg.Encode(bb, t, nil)
+		err = jpeg.Encode(bb, t, nil)
 	} else {
-		png.Encode(bb, t)
+		err = png.Encode(bb, t)
 	}
 
-	return bb.Bytes(), nil
+	return bb.Bytes(), err
 }
