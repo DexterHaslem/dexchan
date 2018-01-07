@@ -12,10 +12,35 @@
 
     <form action="/{{$b.ShortCode}}/{{$t.ID}}/newreply" method="post"
           enctype="multipart/form-data" class="post-form">
-        <textarea name="post" placeholder="enter post"></textarea>
-        <input type="file" name="f" accept="image/*,video/*" placeholder="select file">
+
+        <textarea id="posttext" name="post" placeholder="enter post"></textarea>
+
+        <span>You must provide either an URL or upload image/video to create a thread</span>
+
+        <input type="text" name="url" placeholder="enter url">
+        <span>OR</span><br>
+        <input id="fileinput" type="file" name="f" accept="{{.Board.AttachmentTypes}}"
+               placeholder="select file">
         <input type="submit" value="Post">
     </form>
+    <script>
+        'use strict';
+        var pt = document.getElementById('posttext');
+        var fi = document.getElementById('fileinput');
+
+        ['dragenter', 'dragstart', 'dragend', 'dragleave', 'dragover', 'drag', 'drop'].forEach(en => {
+            pt.addEventListener(en, function (e) {
+                e.stopPropagation();
+                e.preventDefault();
+            });
+        });
+
+        pt.addEventListener('drop', function (e) {
+            if (e.dataTransfer.files.length < 2) {
+                fi.files = e.dataTransfer.files;
+            }
+        });
+    </script>
 </div>
 {{end}}
 

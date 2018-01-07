@@ -14,6 +14,8 @@ import (
 	"strings"
 	"errors"
 	"log"
+	"mime/multipart"
+	"net/url"
 )
 
 func validAttachmentType(fn string, validAttachmentTypes string) bool {
@@ -66,6 +68,47 @@ func (s *Server) createLocationLink(bn, ext string, timestamp int64, isThumbnail
 	return fmt.Sprintf(fmtstring, base, timestamp, ext)
 }
 
+type fileHandle interface {
+	io.ReadCloser
+}
+
+func fileInfoFromURL(urlStr string, max int64) (fileHandle, *multipart.FileHeader, error) {
+	u, err := url.Parse(urlStr)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	getReq, err := http.Get(u.String())
+	if err != nil {
+		return nil, nil, err
+	}
+
+	h := &multipart.FileHeader{}
+	lenStr := getReq.Header.Get("Content-Length")
+	h.Size, _ = strconv.ParseInt(lenStr, 10, 64)
+
+	if h.Size > max {
+		// no easy way to do this elsewhere, but since we have length
+		// we can optimistically handle
+		return nil, nil, errors.New("file greater than max")
+	}
+	// luckily filepath.Base works on urls
+	h.Filename = filepath.Base(urlStr)
+
+	return getReq.Body, h, err
+}
+
+func getFileInfo(w http.ResponseWriter, r *http.Request, maxSize int64) (fileHandle, *multipart.FileHeader, error) {
+	tryUrl := r.FormValue("url")
+	if tryUrl != "" {
+		return fileInfoFromURL(tryUrl, maxSize)
+	}
+	// set this before so we get error before trying to read it
+	r.Body = http.MaxBytesReader(w, r.Body, maxSize)
+	sentFile, fileHeader, err := r.FormFile("f")
+	return sentFile, fileHeader, err
+}
+
 // handleAttachment returns true if there was a an attachment in response
 func (s *Server) handleAttachment(w http.ResponseWriter, r *http.Request, a model.AttachmentEntity) (bool, error) {
 	v := mux.Vars(r)
@@ -78,8 +121,7 @@ func (s *Server) handleAttachment(w http.ResponseWriter, r *http.Request, a mode
 		return false, errors.New("no board found")
 	}
 
-	r.Body = http.MaxBytesReader(w, r.Body, b.MaxAttachmentSize)
-	sentFile, fileHeader, err := r.FormFile("f")
+	file, header, err := getFileInfo(w, r, b.MaxAttachmentSize)
 
 	if err != nil {
 		if isAttachmentRequired(a) {
@@ -88,9 +130,9 @@ func (s *Server) handleAttachment(w http.ResponseWriter, r *http.Request, a mode
 		return false, nil
 	}
 
-	defer sentFile.Close()
+	defer file.Close()
 
-	if !validAttachmentType(fileHeader.Filename, b.AttachmentTypes) {
+	if !validAttachmentType(header.Filename, b.AttachmentTypes) {
 		return true, errors.New("invalid attachment type")
 	}
 
@@ -99,9 +141,9 @@ func (s *Server) handleAttachment(w http.ResponseWriter, r *http.Request, a mode
 		return true, errors.New(fmt.Sprintf("failed to create board save dir: %s", err))
 	}
 
-	timestamp, ext, saveFn := createAttachmentName(fileHeader.Filename, saveDir)
+	timestamp, ext, saveFn := createAttachmentName(header.Filename, saveDir)
 
-	a.ParseFromHeader(fileHeader)
+	a.ParseFromHeader(header)
 	a.SetLocation(s.createLocationLink(bn, ext, timestamp, false))
 
 	saveFile, err := os.Create(saveFn)
@@ -112,7 +154,7 @@ func (s *Server) handleAttachment(w http.ResponseWriter, r *http.Request, a mode
 
 	// dont try anything cute like goroutines otherwise http will return a 200 for you
 	// TODO: partial writes
-	io.Copy(saveFile, sentFile)
+	io.Copy(saveFile, file)
 
 	if ext != ".webm" {
 		// we need to reset file pos so resizer starts at correct spot

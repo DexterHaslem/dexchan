@@ -17,11 +17,14 @@
                       rows="10" cols="10"></textarea>
 
 
-            <span>You must select an image or video to create a thread</span>
-            <input id="fileinput" type="file" name="f" accept=".webm,.png,.jpg,.jpeg" placeholder="select file">
+            <span>You must provide either an URL or upload image/video to create a thread</span>
+
+            <input type="text" name="url" placeholder="enter url">
+            <span>OR</span><br>
+            <input id="fileinput" type="file" name="f" accept="{{.Board.AttachmentTypes}}"
+                   placeholder="select file">
             <input type="submit" value="Post">
         </form>
-        <span>Tip: you can drag a file into the thread description</span>
     </div>
     <script>
         'use strict';
