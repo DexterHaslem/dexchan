@@ -1,6 +1,10 @@
 package model
 
-import "time"
+import (
+	"time"
+	"mime/multipart"
+	"path/filepath"
+)
 
 type AUser struct {
 	ID        int64     `json:"id"`
@@ -61,10 +65,31 @@ type Attachment struct {
 	Size              int64  `json:"attachmentSize"`
 }
 
+type AttachmentEntity interface {
+	SetThumbnail(string)
+	SetLocation(string)
+	GetLocation() string
+	GetThumbnail() string
+	ParseFromHeader(*multipart.FileHeader)
+}
+
+func (a *Attachment) ParseFromHeader(h *multipart.FileHeader) {
+	a.OriginalFilename = filepath.Base(h.Filename)
+	a.Size = h.Size
+}
+
 func (a *Attachment) SetThumbnail(tn string) {
 	a.ThumbnailLocation = tn
 }
-
-type ThumbnailSubject interface {
-	SetThumbnail(string)
+func (a *Attachment) SetLocation(loc string) {
+	a.Location = loc
 }
+
+func (a *Attachment) GetLocation() string {
+	return a.Location
+}
+
+func (a *Attachment) GetThumbnail() string {
+	return a.ThumbnailLocation
+}
+

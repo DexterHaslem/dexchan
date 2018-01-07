@@ -20,7 +20,7 @@ const (
 )
 
 // createThumbnail will create thumbnail of file already open
-func (s *Server) createThumbnail(f *os.File) ([]byte, error) {
+func createThumbnail(f *os.File) ([]byte, error) {
 	ext := filepath.Ext(f.Name())
 
 	if ext == ".webm" {
