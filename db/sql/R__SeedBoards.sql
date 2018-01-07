@@ -13,7 +13,7 @@ BEGIN
         b,
         'board description here',
         FALSE,
-        (SELECT 1024 * 5),
+        (SELECT 1024 * 1024 * 5),
         '.webm,.png,.jpg'
       WHERE NOT exists(SELECT 1
                        FROM board
@@ -30,7 +30,7 @@ INSERT INTO board
     'n',
     'anything NSFW goes here',
     TRUE,
-    (SELECT 1024 * 6),
+    (SELECT 1024 * 1024 * 5),
     '.webm,.png,.jpg'
   WHERE NOT exists(SELECT 1
                    FROM board
