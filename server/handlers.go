@@ -281,6 +281,13 @@ func (s *Server) addReplyHandler(w http.ResponseWriter, r *http.Request) {
 	// todo: lookup board max
 	r.Body = http.MaxBytesReader(w, r.Body, 1024*1024*8)
 	sentFile, fileHeader, err := r.FormFile("f")
+
+	postContent := r.FormValue("post")
+	if postContent == "" && err != nil {
+		http.Error(w, "A reply requires either post content or an attachment!", http.StatusBadRequest)
+		return
+	}
+
 	if err == nil {
 		// todo: abstract
 		saveDir := filepath.Join(s.Config.StaticDir, bn)
@@ -318,7 +325,6 @@ func (s *Server) addReplyHandler(w http.ResponseWriter, r *http.Request) {
 		}()
 	}
 
-	postContent := r.FormValue("post")
 	newPost.Content = html.EscapeString(postContent)
 	newPost.ThreadID = tid
 	newPost.PostedAt = time.Now()
