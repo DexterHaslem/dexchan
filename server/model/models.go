@@ -27,6 +27,7 @@ type Board struct {
 	ShortCode         string `json:"shortCode"`
 	Description       string `json:"description"`
 	IsNotWorksafe     bool   `json:"isNsfw"`
+	IsHidden          bool
 	MaxAttachmentSize int64  `json:"maxAttachmentSize"`
 	AttachmentTypes   string `json:"allowedAttachmentTypes"`
 }
@@ -92,4 +93,3 @@ func (a *Attachment) GetLocation() string {
 func (a *Attachment) GetThumbnail() string {
 	return a.ThumbnailLocation
 }
-

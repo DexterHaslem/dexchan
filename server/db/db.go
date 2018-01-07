@@ -32,7 +32,11 @@ func (d *db) GetUserID(ip string) (int64, error) {
 }
 
 func (d *db) GetBoards() ([]*model.Board, error) {
-	q, err := d.openedDB.Query("SELECT id, name, shortname, description, nsfw, max_attachment_size, allowed_attachment_exts FROM board")
+	q, err := d.openedDB.Query(
+		`SELECT id, name, shortname, description,
+ 						nsfw, max_attachment_size, allowed_attachment_exts
+ 			  FROM board WHERE hidden = FALSE`)
+
 	if err != nil {
 		return nil, err
 	}

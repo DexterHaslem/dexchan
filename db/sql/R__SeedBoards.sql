@@ -34,4 +34,4 @@ INSERT INTO board
     '.webm,.png,.jpg'
   WHERE NOT exists(SELECT 1
                    FROM board
-                   WHERE shortname = 't');
+                   WHERE shortname = 'n');
