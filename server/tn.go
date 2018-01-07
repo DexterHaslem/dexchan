@@ -16,7 +16,7 @@ const (
 	// with keeping of aspect ratio
 
 	MaxWidth  = 350
-	MaxHeight = 350
+	MaxHeight = 1000
 )
 
 // createThumbnail will create thumbnail of file already open
@@ -46,7 +46,7 @@ func createThumbnail(f *os.File) ([]byte, error) {
 		return nil, err
 	}
 	//t := resize.Thumbnail(MaxWidth, MaxHeight, img, resize.Lanczos3)
-	t := resize.Resize(MaxWidth, 0, img, resize.Lanczos3)
+	t := resize.Resize(MaxWidth, MaxHeight, img, resize.Lanczos3)
 
 	bb := &bytes.Buffer{}
 	if isJpeg {
