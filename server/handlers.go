@@ -12,7 +12,6 @@ import (
 	"io"
 	"os"
 	"time"
-	"html"
 	"io/ioutil"
 )
 
@@ -325,7 +324,7 @@ func (s *Server) addReplyHandler(w http.ResponseWriter, r *http.Request) {
 		}()
 	}
 
-	newPost.Content = html.EscapeString(postContent)
+	newPost.Content = postContent
 	newPost.ThreadID = tid
 	newPost.PostedAt = time.Now()
 
