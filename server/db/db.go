@@ -18,7 +18,7 @@ type D interface {
 	GetThreads(boardID int64) ([]*model.Thread, error)
 	GetThread(threadID int64) (*model.Thread, error)
 	GetPosts(threadID int64) ([]*model.Post, error)
-	AddActionLog(ip string, action string) error
+	AddActionLog(ip string, action string, entityID int64) error
 	Close() error
 }
 
@@ -32,8 +32,8 @@ func (d *db) GetUserID(ip string) (int64, error) {
 	return userID, err
 }
 
-func (d *db) AddActionLog(ip string, action string) error {
-	return d.openedDB.QueryRow(`SELECT add_action_log($1, $2)`, ip, action).Scan()
+func (d *db) AddActionLog(ip string, action string, entityID int64) error {
+	return d.openedDB.QueryRow(`SELECT add_action_log($1, $2, $3)`, ip, action, entityID).Scan()
 }
 
 func (d *db) GetBoards() ([]*model.Board, error) {
@@ -85,7 +85,7 @@ func (d *db) CreatePost(p *model.Post, ip string) (int64, error) {
 		p.ThreadID, p.Content, time.Now(), postedByID, false,
 		p.OriginalFilename, p.ThumbnailLocation, p.Location, p.Size).Scan(&createdID)
 
-	d.AddActionLog(ip, "created_post")
+	d.AddActionLog(ip, "created_post", createdID)
 	return createdID, err
 }
 
@@ -103,7 +103,7 @@ func (d *db) CreateThread(t *model.Thread, ip string) (int64, error) {
 		t.BoardID, t.Subject, t.Description, time.Now(), postedByID, false,
 		t.OriginalFilename, t.ThumbnailLocation, t.Location, t.Size).Scan(&createdID)
 
-	d.AddActionLog(ip, "created_thread")
+	d.AddActionLog(ip, "created_thread", createdID)
 	return createdID, err
 }
 
