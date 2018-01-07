@@ -3,8 +3,9 @@
 {{define "body"}}
 {{ $t := .Thread }}
 {{ $b := .Board }}
-<h2 class="board-header">{{$b.ShortCode}} - {{$b.Name}}</h2>
+<h2 class="board-header"><a href="/{{.Board.ShortCode}}">{{.Board.ShortCode}} - {{.Board.Name}}</a></h2>
 <h5 class="board-description">{{$b.Description}}</h5>
+
 <div>
     <h4>Reply</h4>
     <span>Replying to {{ $t.CreatedAt }} - <strong>{{ $t.Subject }}</strong></span>
