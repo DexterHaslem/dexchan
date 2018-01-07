@@ -160,7 +160,7 @@ func (s *Server) addThreadHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	createdID, err := s.Db.CreateThread(newThread, r.RemoteAddr)
+	createdID, err := s.Db.CreateThread(newThread, getRemoteIP(r))
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -195,7 +195,7 @@ func (s *Server) addReplyHandler(w http.ResponseWriter, r *http.Request) {
 	newPost.ThreadID = tid
 	newPost.PostedAt = time.Now()
 
-	createdID, err := s.Db.CreatePost(newPost, r.RemoteAddr)
+	createdID, err := s.Db.CreatePost(newPost, getRemoteIP(r))
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -204,4 +204,17 @@ func (s *Server) addReplyHandler(w http.ResponseWriter, r *http.Request) {
 	// TODO: hardcoded proto atm :-(
 	url := fmt.Sprintf("http://%s/%s/%d#%d", r.Host, bn, tid, createdID)
 	http.Redirect(w, r, url, http.StatusSeeOther)
+}
+
+func getRemoteIP(r *http.Request) string {
+	// we cant always use remote addr
+	// if we're behind a reverse proxy we want to use
+	// X-Real-IP if present. this isnt fool proof, if a third party hit
+	// server directly they could spoof it of course
+
+	if xrip := r.Header.Get("X-Real-IP"); xrip != "" {
+		return xrip
+	}
+
+	return r.RemoteAddr
 }
