@@ -46,7 +46,7 @@ func createThumbnail(f *os.File) ([]byte, error) {
 		return nil, err
 	}
 	//t := resize.Thumbnail(MaxWidth, MaxHeight, img, resize.Lanczos3)
-	t := resize.Resize(MaxWidth, MaxHeight, img, resize.Lanczos3)
+	t := resize.Resize(MaxWidth, 0, img, resize.Lanczos3)
 
 	bb := &bytes.Buffer{}
 	if isJpeg {
