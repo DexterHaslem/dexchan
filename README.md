@@ -15,9 +15,10 @@ then run `flyway migrate` from the db folder.
 
 
 ### Front end / client
-Originally the front end was written in angular5 w/ material, using redux to maintain state.
-I decided writing lots of boilerplate and fraomework for a 90% readonly app was not fun and shot it all.
-Now the entire client is basic html served from the server using go templates (see `templates/`)
+Originally the front end was written in angular5 w/ material, using redux to maintain state. The backend
+consisted of controllers serving up JSON. I decided writing lots of boilerplate and framework for a 90% readonly app was not fun and shot it all.
+Now the entire client is basic html served from the server using go templates (see `templates/`) and it turned out
+quite fast and simple as I had hoped.
 
 
 ### Backend 
