@@ -125,6 +125,13 @@ func getFileInfo(w http.ResponseWriter, r *http.Request, maxSize int64) (fileHan
 	return sentFile, fileHeader, err
 }
 
+func canThumbnail(ext string) bool {
+	// :-( gif has no decoders.
+	// webm is a battle of its own even to just use first frame
+	// from container video
+	return ext != ".webm" && ext != ".gif"
+}
+
 // handleAttachment returns true if there was a an attachment in response
 func (s *Server) handleAttachment(w http.ResponseWriter, r *http.Request, a model.AttachmentEntity) (bool, error) {
 	v := mux.Vars(r)
@@ -172,7 +179,7 @@ func (s *Server) handleAttachment(w http.ResponseWriter, r *http.Request, a mode
 	// TODO: partial writes
 	io.Copy(saveFile, file)
 
-	if ext != ".webm" {
+	if canThumbnail(ext) {
 		// we need to reset file pos so resizer starts at correct spot
 		saveFile.Seek(0, 0)
 		tnBytes, err := createThumbnail(saveFile)
